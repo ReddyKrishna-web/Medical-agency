@@ -1,0 +1,29 @@
+{
+  "name": "supply-medicals-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Smart B2B medical distribution and business operations platform",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n API,WEB -c blue,green \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "typecheck": "npm run typecheck -w backend && npm run typecheck -w frontend",
+    "test": "npm run test -w backend && npm run test -w frontend",
+    "lint": "npm run lint -w backend && npm run lint -w frontend",
+    "verify": "npm run typecheck && npm test && npm run build && npm run lint && npm audit --omit=dev --audit-level=high",
+    "smoke": "node scripts/smoke.mjs",
+    "smoke:e2e": "node scripts/live-e2e.mjs",
+    "seed": "npm run seed -w backend",
+    "start": "npm run start -w backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  },
+  "engines": {
+    "node": ">=20.19.0",
+    "npm": ">=10.0.0"
+  }
+}
