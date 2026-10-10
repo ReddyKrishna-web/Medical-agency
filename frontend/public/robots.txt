@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /customer
+Disallow: /salesman
+Disallow: /admin
+Disallow: /app
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /session-expired
+
+Sitemap: http://localhost:5174/sitemap.xml
