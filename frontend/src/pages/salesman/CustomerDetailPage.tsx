@@ -121,7 +121,7 @@ export default function CustomerDetailPage() {
       />
 
       <div className="mb-5">
-        <Link to="/salesman/customers" className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-brand-700">
+        <Link to="/salesman/customers" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-navy-700 hover:text-brand-700">
           <ArrowLeft className="h-4 w-4" /> My customers
         </Link>
       </div>
@@ -132,34 +132,34 @@ export default function CustomerDetailPage() {
             <CardHeader title="Account details" action={<Badge value={record.status} />} />
             <CardBody className="grid gap-5 sm:grid-cols-2">
               <div className="flex gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-50 text-brand-700">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-sage text-brand-700">
                   <Building2 className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="text-xs text-slate-400">Organisation</p>
-                  <p className="mt-1 font-semibold text-slate-800">{record.businessName}</p>
+                  <p className="text-[11px] uppercase tracking-[.1em] text-muted">Organisation</p>
+                  <p className="mt-1 text-[13.5px] font-medium text-charcoal">{record.businessName}</p>
                 </div>
               </div>
               <div className="flex gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-medical-50 text-medical-700">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-sage text-brand-700">
                   <UserRound className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="text-xs text-slate-400">Primary contact</p>
-                  <p className="mt-1 font-semibold text-slate-800">{record.ownerName || '—'}</p>
+                  <p className="text-[11px] uppercase tracking-[.1em] text-muted">Primary contact</p>
+                  <p className="mt-1 text-[13.5px] font-medium text-charcoal">{record.ownerName || '—'}</p>
                 </div>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Phone</p>
-                <p className="mt-1 font-semibold text-slate-800">{record.phone || 'Not recorded'}</p>
+                <p className="text-[11px] uppercase tracking-[.1em] text-muted">Phone</p>
+                <p className="mt-1 text-[13.5px] font-medium text-charcoal">{record.phone || 'Not recorded'}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Alternate phone</p>
-                <p className="mt-1 font-semibold text-slate-800">{record.alternatePhone || '—'}</p>
+                <p className="text-[11px] uppercase tracking-[.1em] text-muted">Alternate phone</p>
+                <p className="mt-1 text-[13.5px] font-medium text-charcoal">{record.alternatePhone || '—'}</p>
               </div>
               <div className="sm:col-span-2">
-                <p className="text-xs text-slate-400">Registered address</p>
-                <p className="mt-1 whitespace-pre-line text-sm text-slate-700">
+                <p className="text-[11px] uppercase tracking-[.1em] text-muted">Registered address</p>
+                <p className="mt-1 whitespace-pre-line text-[13px] leading-6 text-navy-700">
                   {[
                     record.address.line1,
                     record.address.line2,
@@ -171,24 +171,24 @@ export default function CustomerDetailPage() {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-slate-400">GST number</p>
-                <p className="mt-1 font-semibold text-slate-800">{record.gstNumber || '—'}</p>
+                <p className="text-[11px] uppercase tracking-[.1em] text-muted">GST number</p>
+                <p className="mt-1 text-[13.5px] font-medium text-charcoal">{record.gstNumber || '—'}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Drug licence</p>
-                <p className="mt-1 font-semibold text-slate-800">{record.drugLicenseNumber || '—'}</p>
+                <p className="text-[11px] uppercase tracking-[.1em] text-muted">Drug licence</p>
+                <p className="mt-1 text-[13.5px] font-medium text-charcoal">{record.drugLicenseNumber || '—'}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Credit limit</p>
-                <p className="mt-1 font-semibold text-slate-800">{record.creditLimit}</p>
+                <p className="text-[11px] uppercase tracking-[.1em] text-muted">Credit limit</p>
+                <p className="mt-1 text-[13.5px] font-medium text-charcoal">{record.creditLimit}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Approved</p>
-                <p className="mt-1 font-semibold text-slate-800">{formatDate(record.approvedAt)}</p>
+                <p className="text-[11px] uppercase tracking-[.1em] text-muted">Approved</p>
+                <p className="mt-1 text-[13.5px] font-medium text-charcoal">{formatDate(record.approvedAt)}</p>
               </div>
               <div>
-                <p className="text-xs text-slate-400">Last contact</p>
-                <p className="mt-1 font-semibold text-slate-800">
+                <p className="text-[11px] uppercase tracking-[.1em] text-muted">Last contact</p>
+                <p className="mt-1 text-[13.5px] font-medium text-charcoal">
                   {record.lastContactAt ? `${humanize(record.lastContactType)} · ${formatDate(record.lastContactAt, 'dd MMM yyyy, HH:mm')}` : 'No contact recorded'}
                 </p>
               </div>
@@ -199,23 +199,23 @@ export default function CustomerDetailPage() {
             <CardHeader
               title="Recent orders"
               action={
-                <Link to={`/salesman/orders?customer=${record.id}`} className="text-sm font-semibold text-brand-700">
+                <Link to={`/salesman/orders?customer=${record.id}`} className="text-[13px] font-medium text-brand-700">
                   View all
                 </Link>
               }
             />
             <CardBody className="p-0">
               {orderRows.length ? (
-                <ul className="divide-y divide-slate-100">
+                <ul className="divide-y divide-line/70">
                   {orderRows.map((order) => (
                     <li key={order.id}>
                       <Link
                         to={`/salesman/orders/${order.id}`}
-                        className="flex items-center gap-3 px-5 py-4 hover:bg-slate-50"
+                        className="flex items-center gap-3 px-5 py-4 transition-colors hover:bg-ivory"
                       >
                         <div className="min-w-0 flex-1">
-                          <p className="font-bold text-brand-700">{order.orderNumber}</p>
-                          <p className="mt-0.5 text-xs text-slate-400">{formatDate(order.createdAt)}</p>
+                          <p className="text-[13px] font-medium text-brand-700">{order.orderNumber}</p>
+                          <p className="mt-0.5 text-[11px] text-muted">{formatDate(order.createdAt)}</p>
                         </div>
                         <Badge value={order.status} />
                       </Link>
@@ -261,11 +261,11 @@ export default function CustomerDetailPage() {
                 </div>
               </form>
               {record.accountNotes.length > 0 && (
-                <ul className="mt-4 max-h-64 space-y-3 overflow-y-auto border-t border-slate-100 pt-4">
+                <ul className="mt-4 max-h-64 space-y-3 overflow-y-auto border-t border-line pt-4">
                   {[...record.accountNotes].reverse().map((note, index) => (
-                    <li key={note.id || `${note.at}-${index}`} className="rounded-xl bg-slate-50 p-3">
-                      <p className="text-sm leading-6 text-slate-700">{note.text}</p>
-                      <p className="mt-1 text-[11px] font-semibold text-slate-400">{humanize(note.byRole)} · {formatDate(note.at, 'dd MMM yyyy, HH:mm')}</p>
+                    <li key={note.id || `${note.at}-${index}`} className="rounded-md bg-ivory p-3">
+                      <p className="text-[13px] leading-6 text-navy-700">{note.text}</p>
+                      <p className="mt-1 text-[10px] font-medium text-muted">{humanize(note.byRole)} · {formatDate(note.at, 'dd MMM yyyy, HH:mm')}</p>
                     </li>
                   ))}
                 </ul>
@@ -353,7 +353,7 @@ export default function CustomerDetailPage() {
                 </Button>
               </form>
               {receiverId && (
-                <Link to={`/salesman/messages?with=${receiverId}`} className="mt-4 flex items-center justify-center gap-2 text-sm font-semibold text-brand-700">
+                <Link to={`/salesman/messages?with=${receiverId}`} className="mt-4 flex items-center justify-center gap-2 text-[13px] font-medium text-brand-700">
                   <MessageSquare className="h-4 w-4" /> Open conversation
                 </Link>
               )}
@@ -364,17 +364,17 @@ export default function CustomerDetailPage() {
             <CardHeader title="Follow-up history" />
             <CardBody className="p-0">
               {followRows.length ? (
-                <ul className="divide-y divide-slate-100">
+                <ul className="divide-y divide-line/70">
                   {followRows.map((item) => (
                     <li key={item.id} className="px-5 py-3">
                       <div className="flex justify-between gap-2">
-                        <p className="text-sm font-semibold text-slate-800">{item.title}</p>
+                        <p className="text-[13.5px] font-medium text-charcoal">{item.title}</p>
                         <Badge value={item.status} />
                       </div>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="mt-1 text-xs text-muted">
                         {humanize(item.type)} - due {formatDate(item.dueAt)}
                       </p>
-                      {item.notes && <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">{item.notes}</p>}
+                      {item.notes && <p className="mt-2 line-clamp-2 text-xs leading-5 text-navy-700">{item.notes}</p>}
                     </li>
                   ))}
                 </ul>

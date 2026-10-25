@@ -147,7 +147,7 @@ export default function SettingsPage() {
       >
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Agency profile" description="Shown on the public website through GET /public/agency." action={<Building2 className="h-5 w-5 text-slate-400" />} />
+            <CardHeader title="Agency profile" description="Shown on the public website through GET /public/agency." action={<Building2 className="h-5 w-5 text-navy-400" />} />
             <CardBody className="grid gap-5 sm:grid-cols-2">
               <Field id="settings-name" label="Agency name" required>
                 <TextInput id="settings-name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
@@ -221,7 +221,7 @@ export default function SettingsPage() {
           </Card>
 
           <Card>
-            <CardHeader title="Order defaults" description="Numbering, stock thresholds and cancellation policy." action={<Settings2 className="h-5 w-5 text-slate-400" />} />
+            <CardHeader title="Order defaults" description="Numbering, stock thresholds and cancellation policy." action={<Settings2 className="h-5 w-5 text-navy-400" />} />
             <CardBody className="grid gap-5 sm:grid-cols-2">
               <Field id="settings-prefix" label="Order number prefix" hint="e.g. SM produces SM-2026-000001">
                 <TextInput id="settings-prefix" value={form.orderSettings.prefix} onChange={(event) => patchOrders({ prefix: event.target.value.toUpperCase() })} />
@@ -264,12 +264,12 @@ export default function SettingsPage() {
             <CardHeader
               title="Business hours"
               description="Published opening hours. Free text such as 09:00 - 18:00; a split shift such as 09:00 - 13:00, 16:00 - 20:00 is also valid. Leave blank for a closed day."
-              action={<Clock className="h-5 w-5 text-slate-400" />}
+              action={<Clock className="h-5 w-5 text-navy-400" />}
             />
             <CardBody className="space-y-3">
               {DAYS.map((day) => (
                 <div key={day.key} className="flex flex-wrap items-center gap-2">
-                  <span className="w-24 shrink-0 text-sm font-semibold text-slate-700">{day.label}</span>
+                  <span className="w-24 shrink-0 text-[13px] font-medium text-charcoal">{day.label}</span>
                   <TextInput
                     aria-label={`${day.label} opening hours`}
                     placeholder="09:00 - 18:00"
@@ -292,7 +292,7 @@ export default function SettingsPage() {
                       Mark closed
                     </Button>
                   ) : (
-                    <span className="text-xs text-slate-400">Closed</span>
+                    <span className="text-xs text-muted">Closed</span>
                   )}
                 </div>
               ))}
@@ -342,7 +342,7 @@ export default function SettingsPage() {
                   }
                 />
               ))}
-              <div className="border-t border-slate-100 pt-4">
+              <div className="border-t border-line pt-4">
                 <Checkbox
                   label="Quiet hours"
                   description="Mute non-critical notifications inside the window below."
@@ -362,7 +362,7 @@ export default function SettingsPage() {
                         setForm({ ...form, notifications: { ...form.notifications, quietHoursStart: event.target.value } })
                       }
                     />
-                    <span className="text-sm text-slate-500">to</span>
+                    <span className="text-[13px] text-muted">to</span>
                     <TextInput
                       type="time"
                       aria-label="Quiet hours end"
@@ -381,7 +381,7 @@ export default function SettingsPage() {
           <Card className="sticky top-24">
             <CardHeader title="Save configuration" />
             <CardBody>
-              <p className="text-sm leading-6 text-slate-600">
+              <p className="text-[13px] leading-6 text-navy-700">
                 Changes are written to <code>PATCH /settings</code>. Secrets and API keys are not handled by this
                 frontend.
               </p>

@@ -135,7 +135,7 @@ export default function RequirementDetailPage() {
       <div className="mb-5">
         <Link
           to={`/${role}/requirements`}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-brand-700"
+          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-navy-700 hover:text-brand-700"
         >
           <ArrowLeft className="h-4 w-4" /> All requirements
         </Link>
@@ -146,13 +146,13 @@ export default function RequirementDetailPage() {
           <Card>
             <CardHeader title="Document" description="Metadata returned by the service." />
             <CardBody>
-              <div className="flex items-center gap-4 rounded-xl bg-slate-50 p-4">
-                <span className="grid h-12 w-12 place-items-center rounded-xl bg-white text-brand-700 shadow-sm">
+              <div className="flex items-center gap-4 rounded-lg bg-ivory p-4">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-md border border-line bg-white text-brand-700">
                   <FileText className="h-6 w-6" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-bold text-ink">{requirement.file.originalName}</p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="truncate text-[13.5px] font-medium text-charcoal">{requirement.file.originalName}</p>
+                  <p className="mt-1 text-xs text-muted">
                     {fileSize(requirement.file.sizeBytes)} - {requirement.file.mimeType} - uploaded{' '}
                     {formatDate(requirement.file.uploadedAt || requirement.createdAt)}
                   </p>
@@ -162,7 +162,7 @@ export default function RequirementDetailPage() {
                 </Button>
               </div>
               {requirement.notes && (
-                <p className="mt-6 whitespace-pre-wrap text-sm leading-7 text-slate-600">{requirement.notes}</p>
+                <p className="mt-6 whitespace-pre-wrap text-[13px] leading-7 text-navy-700">{requirement.notes}</p>
               )}
             </CardBody>
           </Card>
@@ -175,14 +175,14 @@ export default function RequirementDetailPage() {
             />
             <CardBody>
               {requirement.extraction.status === 'NOT_REQUESTED' ? (
-                <p className="text-sm leading-6 text-slate-600">Run extraction to read CSV requirements deterministically. PDF, image and Excel extraction requires a configured AI provider.</p>
+                <p className="text-[13px] leading-6 text-navy-700">Run extraction to read CSV requirements deterministically. PDF, image and Excel extraction requires a configured AI provider.</p>
               ) : requirement.extraction.status === 'FAILED' ? (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><p className="font-bold">Extraction did not complete</p><p className="mt-1">The service recorded <code>{requirement.extraction.errorCode ?? 'FAILED'}</code>. Configure the provider or use a CSV file; nothing was invented.</p></div>
+                <div className="rounded-md border border-amber-200 bg-amber-50 p-4 text-[13px] leading-6 text-amber-900"><p className="font-semibold">Extraction did not complete</p><p className="mt-1">The service recorded <code>{requirement.extraction.errorCode ?? 'FAILED'}</code>. Configure the provider or use a CSV file; nothing was invented.</p></div>
               ) : requirement.extraction.items.length === 0 ? (
-                <p className="text-sm text-slate-500">No candidate lines were found. Enter products manually during conversion.</p>
+                <p className="text-[13px] text-muted">No candidate lines were found. Enter products manually during conversion.</p>
               ) : (
                 <>
-                  <div className="mb-4 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                  <div className="mb-4 flex items-start gap-3 rounded-md border border-amber-200 bg-amber-50 p-4 text-[13px] leading-6 text-amber-900">
                     <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
                     <p><strong>Human verification required.</strong> Low-confidence or unmatched lines are marked “Needs verification”. Select only the products and quantities you have checked.</p>
                   </div>
@@ -190,10 +190,10 @@ export default function RequirementDetailPage() {
                     {requirement.extraction.items.map((item, index) => {
                       const selected = Boolean(item.productId && lines.some((line) => line.productId === item.productId));
                       return (
-                        <li key={item.id || `${item.rawText}-${index}`} className="flex flex-col gap-3 rounded-xl border border-slate-200 p-4 sm:flex-row sm:items-center">
+                        <li key={item.id || `${item.rawText}-${index}`} className="flex flex-col gap-3 rounded-lg border border-line p-4 sm:flex-row sm:items-center">
                           <div className="min-w-0 flex-1">
-                            <p className="font-bold text-slate-800">{item.productName || item.rawText}</p>
-                            <p className="mt-1 text-xs text-slate-500">Document text: {item.rawText} · Extracted quantity: {item.quantity ?? '—'}</p>
+                            <p className="text-[13.5px] font-medium text-charcoal">{item.productName || item.rawText}</p>
+                            <p className="mt-1 text-xs text-muted">Document text: {item.rawText} · Extracted quantity: {item.quantity ?? '—'}</p>
                             <div className="mt-2 flex flex-wrap gap-2"><Badge value={`${Math.round(item.confidence * 100)}% confidence`} tone={item.needsVerification ? 'amber' : 'green'} />{item.needsVerification && <Badge value="NEEDS VERIFICATION" tone="red" />}</div>
                             {item.reason && <p className="mt-2 text-xs text-amber-700">{item.reason}</p>}
                           </div>
@@ -213,16 +213,16 @@ export default function RequirementDetailPage() {
             <CardHeader title="Review state" description="Status and review record maintained by the service." />
             <CardBody>
               <div className="flex items-center gap-3">
-                <span className="grid h-9 w-9 place-items-center rounded-full bg-medical-50 text-medical-700">
+                <span className="grid h-9 w-9 place-items-center rounded-md bg-sage text-brand-700">
                   <ClipboardCheck className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="text-sm font-bold text-slate-800">Status: {humanize(requirement.status)}</p>
-                  <p className="mt-1 text-xs text-slate-500">Last updated {formatDate(requirement.updatedAt ?? requirement.createdAt)}</p>
+                  <p className="text-sm text-[13.5px] font-medium text-charcoal">Status: {humanize(requirement.status)}</p>
+                  <p className="mt-1 text-xs text-muted">Last updated {formatDate(requirement.updatedAt ?? requirement.createdAt)}</p>
                 </div>
               </div>
               {requirement.review?.note && (
-                <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                <div className="mt-5 rounded-md border border-amber-200 bg-amber-50 p-4 text-[13px] leading-6 text-amber-900">
                   <strong>Review note</strong>
                   <p className="mt-1">{requirement.review.note}</p>
                   {requirement.review.at && <p className="mt-1 text-xs">Recorded {formatDate(requirement.review.at)}</p>}
@@ -231,7 +231,7 @@ export default function RequirementDetailPage() {
               {requirement.convertedOrderId && (
                 <Link
                   to={`/${role}/orders/${requirement.convertedOrderId}`}
-                  className="mt-5 block rounded-xl border border-brand-200 bg-brand-50 p-4 text-sm font-semibold text-brand-800"
+                  className="mt-5 block rounded-md border border-brand-200 bg-sage/60 p-4 text-[13px] font-medium text-brand-800"
                 >
                   View the converted order
                 </Link>
@@ -277,11 +277,11 @@ export default function RequirementDetailPage() {
                 </div>
               )}
               {canReview && (
-                <div className="mt-5 border-t border-slate-100 pt-5">
+                <div className="mt-5 border-t border-line pt-5">
                   <Button className="w-full" variant="outline" onClick={() => extract.mutate()} loading={extract.isPending} disabled={requirement.status === 'CONVERTED'}>
                     <ScanSearch className="h-4 w-4" /> Extract product lines
                   </Button>
-                  <p className="mt-2 text-xs leading-5 text-slate-500">
+                  <p className="mt-2 text-xs leading-5 text-muted">
                     {requirement.file.extension === '.csv'
                       ? 'CSV is parsed deterministically without an external provider.'
                       : aiStatus.data?.requirementExtraction?.configured
@@ -298,12 +298,12 @@ export default function RequirementDetailPage() {
             </CardBody>
           </Card>
 
-          <div className="rounded-2xl border border-brand-100 bg-brand-50 p-5">
-            <p className="text-sm font-bold text-brand-900">Need more context?</p>
+          <div className="rounded-lg border border-brand-100 bg-sage/50 p-5">
+            <p className="text-[13.5px] font-semibold text-brand-900">Need more context?</p>
             <p className="mt-1 text-xs leading-5 text-brand-800/70">
               Message the account team with this requirement reference before conversion.
             </p>
-            <Link to={`/${role}/messages`} className="mt-3 inline-flex text-sm font-bold text-brand-800">
+            <Link to={`/${role}/messages`} className="mt-3 inline-flex text-[13px] font-medium text-brand-800">
               Open messages
             </Link>
           </div>
@@ -330,7 +330,7 @@ export default function RequirementDetailPage() {
         <div className="space-y-5">
           <Field id="convert-search" label="Find products">
             <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted" />
               <TextInput
                 id="convert-search"
                 value={search}
@@ -341,7 +341,7 @@ export default function RequirementDetailPage() {
             </div>
           </Field>
 
-          <div className="max-h-52 space-y-2 overflow-y-auto rounded-xl border border-slate-200 p-2">
+          <div className="max-h-52 space-y-1 overflow-y-auto rounded-lg border border-line p-2">
             {products.isLoading ? (
               <LoadingState rows={3} />
             ) : (products.data ?? []).length ? (
@@ -360,23 +360,23 @@ export default function RequirementDetailPage() {
                           : [...lines, { productId: product.id, quantity: 1, name: product.name }],
                       )
                     }
-                    className="flex w-full items-center gap-3 rounded-lg p-2 text-left hover:bg-brand-50"
+                    className="flex w-full items-center gap-3 rounded-md p-2 text-left transition-colors hover:bg-ivory"
                   >
-                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-slate-100 text-brand-700">
+                    <span className="grid h-8 w-8 place-items-center rounded bg-sage text-brand-700">
                       <PackagePlus className="h-4 w-4" />
                     </span>
-                    <span className="min-w-0 flex-1 truncate text-sm font-semibold text-slate-700">{product.name}</span>
+                    <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-charcoal">{product.name}</span>
                     {existing && <Badge tone="green">{existing.quantity}</Badge>}
                   </button>
                 );
               })
             ) : (
-              <p className="p-3 text-sm text-slate-500">No products matched that search.</p>
+              <p className="p-3 text-[13px] text-muted">No products matched that search.</p>
             )}
           </div>
 
           {lines.length > 0 && (
-            <div className="space-y-2 rounded-xl bg-slate-50 p-3">
+            <div className="space-y-2 rounded-lg bg-ivory p-3">
               {lines.map((line) => (
                 <div key={line.productId} className="flex items-center gap-2">
                   <span className="min-w-0 flex-1 truncate text-sm">{line.name}</span>
@@ -394,12 +394,12 @@ export default function RequirementDetailPage() {
                         ),
                       )
                     }
-                    className="w-20 rounded-lg border border-slate-300 p-2 text-center text-sm"
+                    className="w-20 rounded-md border border-line bg-white p-2 text-center text-sm text-charcoal"
                   />
                   <button
                     type="button"
                     onClick={() => setLines(lines.filter((item) => item.productId !== line.productId))}
-                    className="rounded-lg p-2 text-red-500 hover:bg-red-50"
+                    className="rounded-md p-2 text-red-600 transition-colors hover:bg-red-50"
                     aria-label={`Remove ${line.name}`}
                   >
                     <XCircle className="h-4 w-4" />

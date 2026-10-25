@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Activity as ActivityIcon, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { apiMeta } from '@/lib/api';
 import { mapActivityLogs } from '@/lib/adapters';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -66,7 +66,7 @@ export default function ActivityPage() {
       render: (item) => (
         <div>
           <p className="font-semibold">{item.entity || '—'}</p>
-          {item.entityId && <p className="text-xs text-slate-400">{item.entityId.slice(-8)}</p>}
+          {item.entityId && <p className="text-xs text-muted">{item.entityId.slice(-8)}</p>}
         </div>
       ),
     },
@@ -76,7 +76,7 @@ export default function ActivityPage() {
       render: (item) => (
         <div>
           <p>{item.summary || 'Activity recorded'}</p>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-muted">
             {actorOf(item) ? `by ${actorOf(item)}` : 'system'}
             {item.actorRole ? ` (${item.actorRole})` : ''}
           </p>
@@ -97,7 +97,7 @@ export default function ActivityPage() {
       <Card className="mb-4 p-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="relative">
-            <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-muted" />
             <TextInput
               aria-label="Search activity"
               value={search}
@@ -137,7 +137,6 @@ export default function ActivityPage() {
           onRetry={() => void query.refetch()}
           emptyTitle="No activity found"
           emptyDescription="Administrative events appear here as the service records them."
-          emptyAction={<ActivityIcon className="h-4 w-4" />}
           footer={<Pagination page={page} limit={25} total={total} onPageChange={setPage} />}
         />
       </Card>

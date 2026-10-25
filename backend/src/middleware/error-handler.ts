@@ -12,6 +12,26 @@ interface ErrorBody {
   details?: unknown;
 }
 
+/**
+ * A MongoDB outage surfaces as the driver's `MongoServerSelectionError` (or a
+ * buffering timeout), not always as mongoose's own subclass, so match on the
+ * error identity as well as the class. It must not be reported as a generic 500.
+ */
+const isDatabaseUnavailable = (error: unknown): boolean => {
+  if (!error || typeof error !== 'object') return false;
+  if (error instanceof mongoose.Error.MongooseServerSelectionError) return true;
+  const candidate = error as { name?: string; message?: string };
+  const name = candidate.name ?? '';
+  const message = candidate.message ?? '';
+  return (
+    name === 'MongoServerSelectionError' ||
+    name === 'MongooseServerSelectionError' ||
+    name === 'MongoNetworkError' ||
+    name === 'MongoNotConnectedError' ||
+    /buffering timed out/i.test(message)
+  );
+};
+
 const isDuplicateKeyError = (error: unknown): boolean =>
   typeof error === 'object' &&
   error !== null &&
@@ -78,9 +98,12 @@ export const errorHandler = (
   } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
     statusCode = 404;
     body = { code: ErrorCode.NOT_FOUND, message: 'Resource was not found' };
-  } else if (error instanceof mongoose.Error.MongooseServerSelectionError) {
+  } else if (isDatabaseUnavailable(error)) {
     statusCode = 503;
-    body = { code: ErrorCode.INTERNAL_ERROR, message: 'Database is unavailable, please retry shortly' };
+    body = {
+      code: ErrorCode.INTERNAL_ERROR,
+      message: 'The service is temporarily unavailable. Please try again shortly.'
+    };
   } else if (error instanceof Error) {
     statusCode = 500;
     if (!env.isProduction && error.name === 'TokenExpiredError') {

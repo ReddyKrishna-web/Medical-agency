@@ -41,13 +41,13 @@ export function CommandMenu({ open, onClose }: { open: boolean; onClose: () => v
   return (
     <Modal open={open} onClose={onClose} title="Search Supply Medicals" description="Search records available to your account." size="md">
       <div className="relative">
-        <Search className="absolute left-3.5 top-3.5 h-5 w-5 text-slate-400" />
+        <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-muted" />
         <input
           ref={inputRef}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search orders, customers, products, invoices"
-          className="h-12 w-full rounded-xl border border-slate-300 pl-11 pr-4 text-sm outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+          className="h-11 w-full rounded-lg border border-line bg-white pl-10 pr-4 text-sm text-charcoal outline-none transition placeholder:text-navy-400 focus:border-azure-500 focus:ring-2 focus:ring-azure-100"
           aria-label="Global search"
         />
       </div>
@@ -59,26 +59,26 @@ export function CommandMenu({ open, onClose }: { open: boolean; onClose: () => v
         ) : search.error ? (
           <p className="py-8 text-center text-sm text-red-600">Search is temporarily unavailable. Please try again.</p>
         ) : hits.length ? (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line/70">
             {hits.map((hit) => (
               <li key={`${hit.type}-${hit.id}`}>
                 <button
                   onClick={() => submit(hit.path)}
-                  className="group flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left hover:bg-brand-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+                  className="group flex w-full items-center gap-3 rounded-md px-3 py-3 text-left transition-colors hover:bg-ivory focus:outline-none focus-visible:ring-2 focus-visible:ring-azure-300"
                 >
-                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-xs font-bold uppercase text-slate-600 group-hover:bg-brand-100 group-hover:text-brand-700">
+                  <span className="grid h-9 w-9 place-items-center rounded-md bg-parchment text-[10px] font-semibold uppercase text-muted group-hover:bg-sage group-hover:text-brand-700">
                     {hit.type.slice(0, 2)}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-slate-800">{hit.title}</span>
-                    <span className="block truncate text-xs text-slate-500">
+                    <span className="block truncate text-sm font-medium text-charcoal">{hit.title}</span>
+                    <span className="block truncate text-xs text-muted">
                       {hit.subtitle || hit.status || formatDate(hit.date ?? hit.expiryDate)}
                     </span>
                   </span>
                   {hit.value !== undefined && (
-                    <span className="shrink-0 text-xs font-semibold text-slate-600">{formatCurrency(hit.value)}</span>
+                    <span className="shrink-0 text-xs font-medium text-navy-700">{formatCurrency(hit.value)}</span>
                   )}
-                  <CornerDownLeft className="h-4 w-4 shrink-0 text-slate-300" />
+                  <CornerDownLeft className="h-4 w-4 shrink-0 text-navy-400" />
                 </button>
               </li>
             ))}

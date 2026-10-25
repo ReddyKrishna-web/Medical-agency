@@ -5,7 +5,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { MapPin } from 'lucide-react';
 
 const inputClasses =
-  'block w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-100 disabled:text-slate-500 aria-[invalid=true]:border-red-400 aria-[invalid=true]:ring-red-100';
+  'block w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-charcoal outline-none transition placeholder:text-navy-400 focus:border-azure-500 focus:ring-2 focus:ring-azure-100 disabled:bg-parchment disabled:text-muted aria-[invalid=true]:border-red-400 aria-[invalid=true]:ring-red-100';
 
 interface CityInputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
@@ -22,7 +22,7 @@ interface CityInputProps
 /**
  * City field with live suggestions from the geocoding service. The dropdown
  * opens while typing, supports full keyboard navigation, and picking a
- * suggestion simply fills the field — the parent form keeps full control of
+ * suggestion simply fills the field â€” the parent form keeps full control of
  * the value through `value` / `onValueChange`.
  */
 export const CityInput = forwardRef<HTMLInputElement, CityInputProps>(
@@ -120,9 +120,9 @@ export const CityInput = forwardRef<HTMLInputElement, CityInputProps>(
             onKeyDown={handleKeyDown}
             {...props}
           />
-          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted">
             {loading ? (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-brand-600 block" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-line border-t-brand-600 block" />
             ) : (
               <MapPin className="h-4 w-4" />
             )}
@@ -134,7 +134,7 @@ export const CityInput = forwardRef<HTMLInputElement, CityInputProps>(
             id="city-suggestion-list"
             role="listbox"
             aria-label="City suggestions"
-            className="absolute z-20 mt-1.5 max-h-60 w-full overflow-auto rounded-xl border border-slate-200 bg-white py-1 shadow-panel"
+            className="absolute z-20 mt-1.5 max-h-60 w-full overflow-auto rounded-lg border border-line bg-white py-1 shadow-lift"
           >
             {suggestions.map((suggestion, index) => (
               <li key={`${suggestion.name}-${suggestion.context}-${index}`} role="option" aria-selected={index === highlighted}>
@@ -148,14 +148,14 @@ export const CityInput = forwardRef<HTMLInputElement, CityInputProps>(
                   onMouseEnter={() => setHighlighted(index)}
                   className={cn(
                     'flex w-full items-start gap-2.5 px-3 py-2 text-left transition',
-                    index === highlighted ? 'bg-brand-50' : 'bg-white',
+                    index === highlighted ? 'bg-ivory' : 'bg-white',
                   )}
                 >
-                  <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400" />
+                  <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted" />
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-semibold text-ink">{suggestion.name}</span>
+                    <span className="block truncate text-sm font-medium text-charcoal">{suggestion.name}</span>
                     {suggestion.context && (
-                      <span className="block truncate text-xs text-slate-500">{suggestion.context}</span>
+                      <span className="block truncate text-xs text-muted">{suggestion.context}</span>
                     )}
                   </span>
                 </button>

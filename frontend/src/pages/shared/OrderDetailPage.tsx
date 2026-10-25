@@ -144,21 +144,19 @@ export default function OrderDetailPage() {
       />
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
-        <Link to={`/${role}/orders`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-brand-700">
+        <Link to={`/${role}/orders`} className="inline-flex items-center gap-1.5 text-[13px] font-medium text-navy-700 hover:text-brand-700">
           <ArrowLeft className="h-4 w-4" /> All orders
         </Link>
-        <span className="text-slate-300">/</span>
+        <span className="text-navy-300">/</span>
         <Badge value={order.status} />
         <Badge value={order.allocationState} tone="slate" />
       </div>
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="space-y-6">
-          <Card>
-            <CardHeader title="Order items" description="Prices, tax and line totals are snapshots taken by the service." />
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] text-left">
-                <thead className="border-y border-slate-100 bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+      <Card>
+        <CardHeader title="Order items" description="Prices, tax and line totals are snapshots taken by the service." />
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[720px] text-left">
+                <thead className="border-y border-line bg-ivory text-[11px] uppercase tracking-[.1em] text-muted">
                   <tr>
                     <th className="px-5 py-3">Product</th>
                     <th className="px-5 py-3">Batch allocation</th>
@@ -168,16 +166,16 @@ export default function OrderDetailPage() {
                     <th className="px-5 py-3 text-right">Line total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-line">
                   {order.items.map((item) => (
                     <tr key={item.productId}>
                       <td className="px-5 py-4">
-                        <p className="font-bold text-slate-800">{item.productName}</p>
-                        <p className="mt-0.5 text-xs text-slate-400">
+                        <p className="text-[13.5px] font-medium text-charcoal">{item.productName}</p>
+                        <p className="mt-0.5 text-xs text-muted">
                           {item.sku} - {item.unit}
                         </p>
                       </td>
-                      <td className="px-5 py-4 text-xs text-slate-500">
+                      <td className="px-5 py-4 text-xs text-muted">
                         {item.allocations.length
                           ? item.allocations
                               .map(
@@ -191,7 +189,7 @@ export default function OrderDetailPage() {
                       </td>
                       <td className="px-5 py-4 text-right font-semibold">{formatNumber(item.quantity)}</td>
                       <td className="px-5 py-4 text-right">{formatCurrency(item.unitPrice, order.currency)}</td>
-                      <td className="px-5 py-4 text-right text-slate-500">
+                      <td className="px-5 py-4 text-right text-muted">
                         {formatNumber(item.taxRate)}% ({formatCurrency(item.taxAmount, order.currency)})
                       </td>
                       <td className="px-5 py-4 text-right font-semibold">{formatCurrency(item.lineTotal, order.currency)}</td>
@@ -200,22 +198,24 @@ export default function OrderDetailPage() {
                 </tbody>
               </table>
             </div>
-            <div className="ml-auto w-full max-w-sm space-y-2 border-t border-slate-100 p-5 text-sm">
-              <div className="flex justify-between text-slate-600">
+            <div className="ml-auto w-full max-w-sm space-y-2 border-t border-line p-5 text-sm">
+              <div className="flex justify-between text-navy-700">
                 <span>Subtotal</span>
                 <span>{formatCurrency(order.subtotal, order.currency)}</span>
               </div>
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-navy-700">
                 <span>Tax</span>
                 <span>{formatCurrency(order.taxTotal, order.currency)}</span>
               </div>
-              <div className="flex justify-between border-t border-slate-200 pt-3 text-lg font-extrabold text-ink">
+              <div className="flex justify-between border-t border-line pt-3 text-[17px] font-semibold text-charcoal">
                 <span>Grand total</span>
                 <span>{formatCurrency(order.grandTotal, order.currency)}</span>
               </div>
             </div>
           </Card>
 
+      <div className="mt-6 grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="order-2 space-y-6 xl:order-1">
           <Card>
             <CardHeader title="Order timeline" description="Server-recorded status history." />
             <CardBody>
@@ -228,17 +228,17 @@ export default function OrderDetailPage() {
                   {timeline.timeline.map((entry, index) => (
                     <li key={`${entry.at}-${index}`} className="relative flex gap-4 pb-7 last:pb-0">
                       <div className="flex flex-col items-center">
-                        <span className="grid h-8 w-8 place-items-center rounded-full bg-medical-50 text-medical-700">
+                        <span className="grid h-8 w-8 place-items-center rounded-md bg-sage text-brand-700">
                           <CheckCircle2 className="h-4 w-4" />
                         </span>
-                        {index < timeline.timeline.length - 1 && <span className="mt-1 h-full w-px bg-slate-200" />}
+                        {index < timeline.timeline.length - 1 && <span className="mt-1 h-full w-px bg-line" />}
                       </div>
                       <div className="pt-1">
-                        <p className="text-sm font-bold text-slate-800">
+                        <p className="text-sm text-[13.5px] font-medium text-charcoal">
                           {entry.from ? `${humanize(entry.from)} to ${humanize(entry.to)}` : humanize(entry.to)}
                         </p>
-                        {entry.note && <p className="mt-1 text-sm text-slate-500">{entry.note}</p>}
-                        <p className="mt-1 text-xs text-slate-400">
+                        {entry.note && <p className="mt-1 text-[13px] text-navy-700">{entry.note}</p>}
+                        <p className="mt-1 text-xs text-muted">
                           {formatDate(entry.at, 'dd MMM yyyy, HH:mm')}
                           {entry.byRole ? ` by ${humanize(entry.byRole)}` : ''}
                         </p>
@@ -251,9 +251,9 @@ export default function OrderDetailPage() {
               )}
 
               {Object.keys(order.statusTimestamps).length > 0 && (
-                <div className="mt-6 border-t border-slate-100 pt-4">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Status timestamps</p>
-                  <ul className="mt-2 space-y-1 text-sm text-slate-600">
+                <div className="mt-6 border-t border-line pt-4">
+                  <p className="text-[10px] font-medium uppercase tracking-[.12em] text-muted">Status timestamps</p>
+                  <ul className="mt-2 space-y-1 text-[13px] text-navy-700">
                     {Object.entries(order.statusTimestamps).map(([key, value]) => (
                       <li key={key} className="flex justify-between gap-4">
                         <span>{humanize(key)}</span>
@@ -267,35 +267,35 @@ export default function OrderDetailPage() {
           </Card>
         </div>
 
-        <aside className="space-y-5 xl:sticky xl:top-24">
+        <aside className="order-1 space-y-5 xl:order-2 xl:sticky xl:top-24">
           <Card>
             <CardHeader title="Order summary" />
             <CardBody className="space-y-4 text-sm">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Customer</p>
-                <p className="mt-1 font-bold text-slate-800">{order.customerName}</p>
+                <p className="text-[10px] font-medium uppercase tracking-[.12em] text-muted">Customer</p>
+                <p className="mt-1 text-[13.5px] font-medium text-charcoal">{order.customerName}</p>
               </div>
-              <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
+              <div className="grid grid-cols-2 gap-4 border-t border-line pt-4">
                 <div>
-                  <p className="text-xs text-slate-400">Source</p>
+                  <p className="text-xs text-muted">Source</p>
                   <p className="mt-1 font-semibold">{humanize(order.source)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400">Last updated</p>
+                  <p className="text-xs text-muted">Last updated</p>
                   <p className="mt-1 font-semibold">{formatDate(order.updatedAt)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400">Currency</p>
+                  <p className="text-xs text-muted">Currency</p>
                   <p className="mt-1 font-semibold">{order.currency}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400">Reordered from</p>
+                  <p className="text-xs text-muted">Reordered from</p>
                   <p className="mt-1 font-semibold">{order.reorderedFromOrderId ? order.reorderedFromOrderId.slice(-8) : '—'}</p>
                 </div>
               </div>
-              {order.cancellation && (
-                <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-                  <p className="font-bold">Cancelled {formatDate(order.cancellation.at)}</p>
+              {order.cancellation?.at && (
+                <div className="rounded-md border border-red-200 bg-red-50 p-3 text-[13px] text-red-800">
+                  <p className="font-semibold">Cancelled {formatDate(order.cancellation.at)}</p>
                   <p className="mt-1">{order.cancellation.reason}</p>
                   {order.cancellation.stockDisposition && (
                     <p className="mt-1 text-xs">Stock disposition: {humanize(order.cancellation.stockDisposition)}</p>
@@ -305,7 +305,7 @@ export default function OrderDetailPage() {
               {order.invoiceId && (
                 <Link
                   to={`/${role}/invoices/${order.invoiceId}`}
-                  className="block rounded-xl border border-brand-200 bg-brand-50 p-3 text-sm font-semibold text-brand-800"
+                  className="block rounded-md border border-brand-200 bg-sage/60 p-3 text-[13px] font-medium text-brand-800"
                 >
                   View linked invoice
                 </Link>
@@ -345,7 +345,7 @@ export default function OrderDetailPage() {
             <Card>
               <CardHeader title="Cancel order" />
               <CardBody>
-                <p className="mb-4 text-sm leading-6 text-slate-600">
+                <p className="mb-4 text-[13px] leading-6 text-navy-700">
                   Cancellation is recorded on the timeline and releases or restores any reserved stock.
                 </p>
                 <Button variant="danger" className="w-full" onClick={() => setCancelOpen(true)}>
@@ -355,13 +355,13 @@ export default function OrderDetailPage() {
             </Card>
           )}
 
-          <div className="rounded-2xl bg-ink p-5 text-white">
-            <Truck className="h-5 w-5 text-medical-300" />
-            <p className="mt-3 text-sm font-bold">Questions about this order?</p>
-            <p className="mt-1 text-xs leading-5 text-slate-400">
+          <div className="rounded-lg bg-charcoal p-5 text-white">
+            <Truck className="h-5 w-5 text-sage" />
+            <p className="mt-3 text-[13.5px] font-medium">Questions about this order?</p>
+            <p className="mt-1 text-xs leading-5 text-white/70">
               Message your account team and include {order.orderNumber}.
             </p>
-            <Link to={`/${role}/messages`} className="mt-4 inline-flex text-sm font-bold text-medical-300">
+            <Link to={`/${role}/messages`} className="mt-4 inline-flex text-[13px] font-medium text-sage">
               Open messages
             </Link>
           </div>

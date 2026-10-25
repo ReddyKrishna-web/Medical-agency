@@ -99,6 +99,7 @@ export default function MessagesPage() {
   });
 
   const messageRows = messages.data ?? [];
+  const emptyWorkspace = !conversations.isLoading && !conversations.error && !rows.length && !search.trim();
   const active: Conversation | undefined = rows.find((conversation) => conversation.partner.id === selected);
   const activeName = active?.partner.name ?? (selected ? 'Conversation' : 'Select a conversation');
 
@@ -124,11 +125,30 @@ export default function MessagesPage() {
         }
       />
 
-      <div className="grid min-h-[620px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft lg:grid-cols-[340px_minmax(0,1fr)]">
-        <aside className={selected ? 'hidden border-r border-slate-200 lg:block' : 'block'}>
-          <div className="border-b border-slate-100 p-4">
+      <div
+        className={
+          emptyWorkspace
+            ? 'flex min-h-[620px] items-center justify-center overflow-hidden rounded-lg border border-line bg-white'
+            : 'grid min-h-[620px] overflow-hidden rounded-lg border border-line bg-white lg:grid-cols-[340px_minmax(0,1fr)]'
+        }
+      >
+        {emptyWorkspace ? (
+          <EmptyState
+            icon={MessagesSquare}
+            title="No conversations yet"
+            description="Messages are scoped to your account. Start a conversation with an authorised account contact."
+            action={
+              <Button onClick={() => setComposeOpen(true)}>
+                <MessageCircle className="h-4 w-4" /> New message
+              </Button>
+            }
+          />
+        ) : (
+          <>
+        <aside className={selected ? 'hidden border-r border-line lg:block' : 'block'}>
+          <div className="border-b border-line p-4">
             <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted" />
               <TextInput
                 aria-label="Search conversations"
                 value={search}
@@ -146,7 +166,7 @@ export default function MessagesPage() {
             ) : conversations.error ? (
               <ErrorState error={conversations.error} onRetry={() => void conversations.refetch()} />
             ) : rows.length ? (
-              <ul>
+              <ul className="divide-y divide-line/70">
                 {rows.map((conversation) => {
                   const id = conversation.partner.id;
                   const isActive = selected === id;
@@ -157,9 +177,11 @@ export default function MessagesPage() {
                           setSelected(id);
                           setParams({ with: id });
                         }}
-                        className={`flex w-full gap-3 border-b border-slate-100 p-4 text-left hover:bg-slate-50 ${isActive ? 'bg-brand-50' : ''}`}
+                        className={`flex w-full gap-3 p-4 text-left transition-colors hover:bg-ivory ${
+                          isActive ? 'bg-sage/40' : ''
+                        }`}
                       >
-                        <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full bg-brand-100 text-xs font-bold text-brand-800">
+                        <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-md bg-sage text-xs font-semibold text-brand-800">
                           {conversation.partner.avatarUrl ? (
                             <img
                               src={conversation.partner.avatarUrl}
@@ -175,19 +197,19 @@ export default function MessagesPage() {
                         </span>
                         <span className="min-w-0 flex-1">
                           <span className="flex items-center justify-between gap-2">
-                            <span className="truncate text-sm font-bold text-slate-800">
+                            <span className="truncate text-sm font-medium text-charcoal">
                               {conversation.partner.name || conversation.partner.email}
                             </span>
-                            <span className="shrink-0 text-[10px] text-slate-400">
+                            <span className="shrink-0 text-[10px] text-muted">
                               {timeAgo(conversation.lastMessageAt)}
                             </span>
                           </span>
-                          <span className="mt-1 block truncate text-xs text-slate-500">
+                          <span className="mt-1 block truncate text-xs text-muted">
                             {conversation.lastBody || 'Start a conversation'}
                           </span>
                         </span>
                         {conversation.unreadCount > 0 && (
-                          <span className="grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                          <span className="grid h-5 min-w-5 shrink-0 place-items-center rounded-md bg-brand-700 px-1 text-[10px] font-medium text-white">
                             {conversation.unreadCount}
                           </span>
                         )}
@@ -212,86 +234,119 @@ export default function MessagesPage() {
         </aside>
 
         <section className={selected ? 'flex min-h-[620px] flex-col' : 'hidden lg:flex'}>
-          <header className="flex items-center gap-3 border-b border-slate-100 p-4">
-            <button
-              onClick={() => {
-                setSelected('');
-                setParams({});
-              }}
-              className="rounded-lg px-2 py-1 text-sm font-semibold text-brand-700 lg:hidden"
-            >
-              Back
-            </button>
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-brand-100 text-xs font-bold text-brand-800">
-              {initials(activeName)}
-            </span>
-            <div className="min-w-0">
-              <p className="truncate font-bold text-ink">{activeName}</p>
-              <p className="text-xs text-slate-400">{active?.partner.role ?? 'Account conversation'}</p>
-            </div>
-            {active && active.unreadCount > 0 && <Badge tone="red">{active.unreadCount} new</Badge>}
-          </header>
-
-          <div className="flex-1 space-y-4 overflow-y-auto bg-slate-50/60 p-4 sm:p-6">
-            {messages.isLoading ? (
-              <LoadingState rows={5} />
-            ) : messages.error ? (
-              <ErrorState error={messages.error} onRetry={() => void messages.refetch()} />
-            ) : messageRows.length ? (
-              messageRows.map((message: Message) => {
-                const mine = message.senderId === user?.id;
-                return (
-                  <div key={message.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
-                    <div
-                      className={`max-w-[82%] rounded-2xl px-4 py-3 shadow-sm sm:max-w-[70%] ${
-                        mine ? 'rounded-br-sm bg-brand-700 text-white' : 'rounded-bl-sm border border-slate-200 bg-white text-slate-700'
-                      }`}
-                    >
-                      {message.orderReference && (
-                        <p className={`mb-1 text-[10px] font-bold uppercase tracking-wider ${mine ? 'text-brand-100' : 'text-brand-600'}`}>
-                          {message.orderReference}
-                        </p>
-                      )}
-                      <p className="whitespace-pre-wrap text-sm leading-6">{message.body}</p>
-                      <p className={`mt-1.5 flex items-center justify-end gap-1 text-[10px] ${mine ? 'text-brand-100' : 'text-slate-400'}`}>
-                        {formatDate(message.createdAt, 'HH:mm')}
-                        {mine && <CheckCheck className="h-3 w-3" />}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <EmptyState icon={MessageCircle} title="No messages yet" description="Send the first message in this conversation." />
-            )}
-          </div>
-
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              submitMessage();
-            }}
-            className="border-t border-slate-100 bg-white p-3"
-          >
-            <div className="flex items-end gap-2">
-              <Textarea
-                value={body}
-                onChange={(event) => setBody(event.target.value)}
-                placeholder="Write a message"
-                aria-label="Message"
-                maxLength={4000}
-                rows={2}
-                className="min-h-0 flex-1"
-              />
-              <Button type="submit" size="icon" loading={send.isPending} disabled={!body.trim()} aria-label="Send message">
-                <Send className="h-4 w-4" />
+          {!active ? (
+            <div className="m-auto max-w-xs px-6 py-16 text-center">
+              <span className="mx-auto grid h-11 w-11 place-items-center rounded-md bg-ivory text-muted">
+                <MessagesSquare className="h-5 w-5" aria-hidden />
+              </span>
+              <h2 className="mt-4 text-[15px] font-semibold text-charcoal">Select a conversation</h2>
+              <p className="mt-1.5 text-[13px] leading-6 text-muted">
+                Choose an account contact from the list, or start a new message.
+              </p>
+              <Button className="mt-5" size="sm" variant="outline" onClick={() => setComposeOpen(true)}>
+                <MessageCircle className="h-4 w-4" /> New message
               </Button>
             </div>
-            <p className="mt-2 px-1 text-[10px] text-slate-400">
-              Do not include patient-identifiable or sensitive clinical information.
-            </p>
-          </form>
+          ) : (
+            <>
+              <header className="flex items-center gap-3 border-b border-line p-4">
+                <button
+                  onClick={() => {
+                    setSelected('');
+                    setParams({});
+                  }}
+                  className="rounded-md px-2 py-1 text-[13px] font-medium text-brand-700 lg:hidden"
+                >
+                  Back
+                </button>
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-sage text-xs font-semibold text-brand-800">
+                  {initials(activeName)}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-charcoal">{activeName}</p>
+                  <p className="text-xs capitalize text-muted">{active?.partner.role ?? 'Account conversation'}</p>
+                </div>
+                {active.unreadCount > 0 && <Badge tone="red">{active.unreadCount} new</Badge>}
+              </header>
+
+              <div className="flex-1 space-y-4 overflow-y-auto bg-ivory/60 p-4 sm:p-6">
+                {messages.isLoading ? (
+                  <LoadingState rows={5} />
+                ) : messages.error ? (
+                  <ErrorState error={messages.error} onRetry={() => void messages.refetch()} />
+                ) : messageRows.length ? (
+                  messageRows.map((message: Message) => {
+                    const mine = message.senderId === user?.id;
+                    return (
+                      <div key={message.id} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
+                        <div
+                          className={`max-w-[82%] rounded-lg px-4 py-3 sm:max-w-[70%] ${
+                            mine
+                              ? 'bg-brand-700 text-white'
+                              : 'border border-line bg-white text-charcoal'
+                          }`}
+                        >
+                          {message.orderReference && (
+                            <p
+                              className={`mb-1 text-[10px] font-medium uppercase tracking-[.12em] ${
+                                mine ? 'text-brand-100' : 'text-brand-700'
+                              }`}
+                            >
+                              {message.orderReference}
+                            </p>
+                          )}
+                          <p className="whitespace-pre-wrap text-sm leading-6">{message.body}</p>
+                          <p
+                            className={`mt-1.5 flex items-center justify-end gap-1 text-[10px] ${
+                              mine ? 'text-brand-100' : 'text-muted'
+                            }`}
+                          >
+                            {formatDate(message.createdAt, 'HH:mm')}
+                            {mine && <CheckCheck className="h-3 w-3" />}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <EmptyState
+                    icon={MessageCircle}
+                    title="No messages yet"
+                    description="Send the first message in this conversation."
+                  />
+                )}
+              </div>
+
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  submitMessage();
+                }}
+                className="border-t border-line bg-white p-3"
+              >
+                <div className="flex items-end gap-2">
+                  <Textarea
+                    value={body}
+                    onChange={(event) => setBody(event.target.value)}
+                    placeholder="Write a message"
+                    aria-label="Message"
+                    maxLength={4000}
+                    rows={2}
+                    className="min-h-0 flex-1"
+                  />
+                  <Button type="submit" size="icon" loading={send.isPending} disabled={!body.trim()} aria-label="Send message">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="mt-2 px-1 text-[10px] text-muted">
+                  Do not include patient-identifiable or sensitive clinical information.
+                </p>
+              </form>
+            </>
+          )}
         </section>
+          </>
+        )}
       </div>
 
       <Modal

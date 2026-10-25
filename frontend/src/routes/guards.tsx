@@ -72,7 +72,7 @@ export function PendingApprovalPage() {
                 <Button variant="outline" onClick={() => void logout()}>
                   Sign out
                 </Button>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted">
                   Account status: <strong>{user?.status}</strong>
                 </p>
               </div>

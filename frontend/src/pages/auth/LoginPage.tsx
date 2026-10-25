@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -26,6 +26,10 @@ export default function LoginPage() {
   const expired = Boolean((location.state as { expired?: boolean } | null)?.expired);
   const [show, setShow] = useState(false);
   const [formError, setFormError] = useState('');
+  // react-hook-form exposes `isSubmitting`, but a second submit event can fire
+  // before React re-renders with the disabled button. This lock closes that gap
+  // so double-clicking or double-pressing Enter cannot send two sign-in requests.
+  const submitLock = useRef(false);
 
   const {
     register,
@@ -34,13 +38,18 @@ export default function LoginPage() {
   } = useForm<Values>({ resolver: zodResolver(schema) });
 
   const submit = async (values: Values) => {
+    if (submitLock.current) return;
+    submitLock.current = true;
     setFormError('');
     try {
       const user = await login(values);
       showToast('success', 'Welcome back');
       navigate(roleHome[user.role] || '/customer/dashboard', { replace: true });
     } catch (error) {
+      // Keep the entered email so a transient failure can be retried directly.
       setFormError(error instanceof Error ? error.message : 'Unable to sign in.');
+    } finally {
+      submitLock.current = false;
     }
   };
 
@@ -48,22 +57,27 @@ export default function LoginPage() {
     <>
       <SEO title="Sign in" description="Sign in to your Supply Medicals workspace." noIndex />
 
-      <div className="mb-8">
-        <p className="text-xs font-bold uppercase tracking-[.18em] text-medical-700">Sign in</p>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-ink">Good to see you again</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-600">
+      <div className="mb-7">
+        <p className="text-[11px] font-medium uppercase tracking-[.14em] text-brand-700">Sign in</p>
+        <h1 className="mt-2 font-display text-[27px] font-semibold tracking-[-0.02em] text-charcoal">
+          Good to see you again
+        </h1>
+        <p className="mt-2 text-sm leading-6 text-muted">
           Sign in with the credentials you registered. Your session is protected with rotating refresh cookies.
         </p>
       </div>
 
       {expired && (
-        <div role="status" className="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        <div
+          role="status"
+          className="mb-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900"
+        >
           Your session expired or could not be renewed. Sign in again to continue.
         </div>
       )}
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-panel sm:p-8">
-        <form onSubmit={handleSubmit(submit)} noValidate className="space-y-5">
+      <div className="rounded-xl border border-line bg-white p-6 shadow-soft sm:p-8">
+        <form onSubmit={handleSubmit(submit)} noValidate aria-busy={isSubmitting} className="space-y-5">
           <Field id="email" label="Email address" error={errors.email?.message} required>
             <TextInput
               id="email"
@@ -89,7 +103,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShow((value) => !value)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-2 text-muted transition-colors hover:bg-parchment hover:text-charcoal"
                 aria-label={show ? 'Hide password' : 'Show password'}
               >
                 {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -98,27 +112,27 @@ export default function LoginPage() {
           </Field>
 
           <div className="flex justify-end">
-            <Link to="/forgot-password" className="text-sm font-semibold text-brand-700 transition hover:text-brand-900">
+            <Link to="/forgot-password" className="text-[13px] font-medium text-brand-700 transition-colors hover:text-brand-800">
               Forgot password?
             </Link>
           </div>
 
           <InlineError message={formError} />
 
-          <Button type="submit" size="lg" className="w-full" loading={isSubmitting}>
-            <LogIn className="h-4 w-4" /> Sign in
+          <Button type="submit" size="lg" className="w-full" loading={isSubmitting} disabled={isSubmitting}>
+            <LogIn className="h-4 w-4" aria-hidden /> {isSubmitting ? 'Signing in…' : 'Sign in'}
           </Button>
         </form>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-slate-200 bg-white/70 p-4 text-center">
-        <p className="text-sm text-slate-600">
+      <div className="mt-5 rounded-xl border border-line bg-white p-4 text-center">
+        <p className="text-sm text-muted">
           New to Supply Medicals?{' '}
-          <Link to="/register" className="font-extrabold text-brand-700 transition hover:text-brand-900">
+          <Link to="/register" className="font-medium text-brand-700 transition-colors hover:text-brand-800">
             Create an account <ArrowRight className="inline h-3.5 w-3.5" />
           </Link>
         </p>
-        <p className="mt-1 text-xs text-slate-400">Shops, salesmen and agencies — one form for all three.</p>
+        <p className="mt-1 text-xs text-muted/90">Shops, salesmen and agencies — one form for all three.</p>
       </div>
     </>
   );

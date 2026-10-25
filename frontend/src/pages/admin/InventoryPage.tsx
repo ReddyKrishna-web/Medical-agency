@@ -150,40 +150,59 @@ export default function InventoryPage() {
     {
       key: 'product',
       header: 'Product',
+      className: 'max-w-[320px]',
       render: (item) => (
         <div className="flex items-center gap-3">
-          <span className="grid h-9 w-9 place-items-center rounded-lg bg-brand-50 text-brand-700">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700">
             <Boxes className="h-4 w-4" />
           </span>
           <div className="min-w-0">
-            <p className="truncate font-bold text-slate-800">
+            <p className="truncate text-[13.5px] font-medium text-charcoal">
               {item.product && typeof item.product === 'object' ? item.product.name : item.productId}
             </p>
-            <p className="truncate text-xs text-slate-400">
+            <p className="truncate text-xs text-muted">
               {item.product && typeof item.product === 'object' ? item.product.sku : ''} - batch {item.batchNumber}
             </p>
           </div>
         </div>
       ),
     },
-    { key: 'onHand', header: 'On hand', render: (item) => formatNumber(item.quantityOnHand) },
-    { key: 'reserved', header: 'Reserved', render: (item) => formatNumber(item.quantityReserved), mobileLabel: false },
     {
-      key: 'available',
-      header: 'Available',
-      render: (item) => <span className="font-bold text-slate-800">{formatNumber(item.quantityAvailable)}</span>,
+      key: 'onHand',
+      header: 'On hand',
+      render: (item) => (
+        <div className="whitespace-nowrap">
+          <span className="tabular-nums">{formatNumber(item.quantityOnHand)}</span>
+          <span className="block text-[11px] text-muted">
+            {formatNumber(item.quantityAvailable)} available
+            {item.quantityReserved > 0 && <> · {formatNumber(item.quantityReserved)} reserved</>}
+            {' · '}reorder {formatNumber(item.reorderLevel)}
+          </span>
+        </div>
+      ),
     },
     {
       key: 'expiry',
       header: 'Expires',
       render: (item) => (
-        <span className={item.isExpired ? 'font-semibold text-red-600' : undefined}>{formatDate(item.expiryDate)}</span>
+        <span className={`whitespace-nowrap ${item.isExpired ? 'font-medium text-red-600' : ''}`}>
+          {formatDate(item.expiryDate)}
+        </span>
       ),
       mobileLabel: false,
     },
-    { key: 'reorder', header: 'Reorder level', render: (item) => formatNumber(item.reorderLevel), mobileLabel: false },
-    { key: 'cost', header: 'Unit cost', render: (item) => formatCurrency(item.unitCost), mobileLabel: false },
-    { key: 'location', header: 'Location', render: (item) => item.location || '—', mobileLabel: false },
+    {
+      key: 'cost',
+      header: 'Cost',
+      render: (item) => <span className="whitespace-nowrap tabular-nums">{formatCurrency(item.unitCost)}</span>,
+      mobileLabel: false,
+    },
+    {
+      key: 'location',
+      header: 'Location',
+      render: (item) => <span className="whitespace-nowrap">{item.location || '—'}</span>,
+      mobileLabel: false,
+    },
     {
       key: 'signal',
       header: 'Signal',
@@ -224,8 +243,8 @@ export default function InventoryPage() {
       header: 'Batch',
       render: (item) => (
         <div>
-          <p className="font-bold text-slate-800">{item.batchNumber}</p>
-          <p className="text-xs text-slate-400">
+          <p className="whitespace-nowrap text-[13px] font-medium text-charcoal">{item.batchNumber}</p>
+          <p className="text-xs text-muted">
             {item.productId && typeof item.productId === 'object' ? item.productId.name : item.productId}
           </p>
         </div>
@@ -237,7 +256,11 @@ export default function InventoryPage() {
     {
       key: 'expiry',
       header: 'Expires',
-      render: (item) => <span className={item.isExpired ? 'font-semibold text-red-600' : undefined}>{formatDate(item.expiryDate)}</span>,
+      render: (item) => (
+        <span className={`whitespace-nowrap ${item.isExpired ? 'font-medium text-red-600' : ''}`}>
+          {formatDate(item.expiryDate)}
+        </span>
+      ),
     },
     { key: 'received', header: 'Received', render: (item) => formatDate(item.receivedAt), mobileLabel: false },
     { key: 'status', header: 'Status', render: (item) => <Badge value={item.isExpired ? 'EXPIRED' : item.status} /> },
@@ -270,10 +293,10 @@ export default function InventoryPage() {
   const movementColumns: Column<InventoryMovement>[] = [
     { key: 'date', header: 'When', render: (item) => formatDate(item.createdAt, 'dd MMM yyyy, HH:mm') },
     { key: 'type', header: 'Movement', render: (item) => <Badge value={item.type} /> },
-    { key: 'product', header: 'Product', render: (item) => <div><p className="font-semibold text-slate-800">{item.productName || item.productId}</p><p className="text-xs text-slate-400">Batch {item.batchNumber}</p></div> },
-    { key: 'quantity', header: 'Quantity', render: (item) => <span className={item.direction === 'IN' ? 'font-bold text-medical-700' : 'font-bold text-amber-700'}>{item.direction === 'IN' ? '+' : '−'}{formatNumber(item.quantity)}</span> },
+    { key: 'product', header: 'Product', render: (item) => <div><p className="text-[13px] font-medium text-charcoal">{item.productName || item.productId}</p><p className="text-xs text-muted">Batch {item.batchNumber}</p></div> },
+    { key: 'quantity', header: 'Quantity', render: (item) => <span className={item.direction === 'IN' ? 'font-medium tabular-nums text-brand-700' : 'font-medium tabular-nums text-amber-700'}>{item.direction === 'IN' ? '+' : '−'}{formatNumber(item.quantity)}</span> },
     { key: 'balance', header: 'Balance after', render: (item) => `${formatNumber(item.balanceOnHand)} on hand / ${formatNumber(item.balanceReserved)} reserved`, mobileLabel: false },
-    { key: 'reference', header: 'Reference', render: (item) => <div><p className="text-sm font-semibold">{item.referenceNumber || item.referenceType || 'Manual'}</p>{item.reason && <p className="text-xs text-slate-400">{item.reason}</p>}</div>, mobileLabel: false },
+    { key: 'reference', header: 'Reference', render: (item) => <div><p className="text-sm font-semibold">{item.referenceNumber || item.referenceType || 'Manual'}</p>{item.reason && <p className="text-xs text-muted">{item.reason}</p>}</div>, mobileLabel: false },
   ];
 
   const isStock = tab === 'stock';
@@ -304,8 +327,8 @@ export default function InventoryPage() {
       />
 
       <Card className="mb-5 overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-slate-100 p-4 lg:flex-row lg:items-center lg:justify-between">
-          <div role="tablist" aria-label="Inventory views" className="flex gap-1 rounded-xl bg-slate-100 p-1">
+        <div className="flex flex-col gap-3 border-b border-line p-4 lg:flex-row lg:items-center lg:justify-between">
+          <div role="tablist" aria-label="Inventory views" className="flex gap-1 rounded-md bg-parchment p-1">
             {(['stock', 'batches', 'movements'] as Tab[]).map((value) => (
               <button
                 key={value}
@@ -315,7 +338,7 @@ export default function InventoryPage() {
                   setTab(value);
                   setPage(1);
                 }}
-                className={`rounded-lg px-4 py-2 text-sm font-semibold capitalize ${tab === value ? 'bg-white text-brand-700 shadow-sm' : 'text-slate-500'}`}
+                className={`rounded-lg px-4 py-2 text-sm font-semibold capitalize ${tab === value ? 'bg-white text-brand-700 shadow-soft' : 'text-navy-700'}`}
               >
                 {value}
               </button>
@@ -336,7 +359,7 @@ export default function InventoryPage() {
             </div>
             {!isBatch && tab !== 'movements' && (
               <>
-                <SlidersHorizontal className="h-4 w-4 text-slate-400" />
+                <SlidersHorizontal className="h-4 w-4 text-muted" />
                 <SelectInput
                   value={filter}
                   onChange={(event) => {
@@ -361,6 +384,7 @@ export default function InventoryPage() {
           columns={columns}
           rows={rows}
           getKey={(item) => item.id}
+          minWidth="1000px"
           loading={loading}
           error={error}
           onRetry={retry}
@@ -370,7 +394,7 @@ export default function InventoryPage() {
         />
       </Card>
 
-      <div className="mb-5 flex items-start gap-3 rounded-2xl border border-brand-200 bg-brand-50 p-4 text-sm text-brand-900">
+      <div className="mb-5 flex items-start gap-3 rounded-lg border border-brand-200 bg-brand-50 p-4 text-sm text-brand-900">
         <Info className="mt-0.5 h-5 w-5 shrink-0" />
         <p>
           Adjustments are keyed on an <code className="rounded bg-white px-1">inventoryId</code>, not on a product or
@@ -444,7 +468,7 @@ export default function InventoryPage() {
             />
           </Field>
           {batch && (
-            <p className="rounded-xl bg-slate-50 p-3 text-xs text-slate-500">
+            <p className="rounded-md bg-ivory p-3 text-xs leading-5 text-muted">
               Expiry {formatDate(batch.expiryDate)}
               {batch.isExpired ? ' - this batch has already expired and cannot be reactivated.' : ''}
             </p>
@@ -600,8 +624,8 @@ export default function InventoryPage() {
           }}
         >
           {adjusting && (
-            <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
-              <p className="font-bold text-slate-800">
+            <div className="rounded-lg bg-ivory p-4 text-[13px] text-navy-700">
+              <p className="font-semibold text-charcoal">
                 {adjusting.product && typeof adjusting.product === 'object' ? adjusting.product.name : adjusting.productId}
               </p>
               <p className="mt-1">

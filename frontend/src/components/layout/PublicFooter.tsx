@@ -29,95 +29,90 @@ export function PublicFooter() {
     : '';
 
   return (
-    <footer className="bg-ink text-slate-300">
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+    <footer className="border-t border-white/10 bg-charcoal text-white/70">
+      <div className="mx-auto max-w-[1240px] px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
             <Logo light />
-            <p className="mt-5 max-w-md text-sm leading-7 text-slate-400">
-              A focused digital workspace for healthcare organisations to source medical supplies, manage orders and stay
+            <p className="mt-5 max-w-md text-sm leading-7 text-white/55">
+              A focused workspace for healthcare organisations to source medical supplies, manage orders and stay
               connected with their account team.
             </p>
           </div>
+
           <div>
-            <h2 className="text-sm font-bold text-white">Company</h2>
-            <ul className="mt-4 space-y-3 text-sm">
-              <li>
-                <Link className="hover:text-medical-300" to="/about">
-                  About us
-                </Link>
-              </li>
-              <li>
-                <Link className="hover:text-medical-300" to="/solutions">
-                  Solutions
-                </Link>
-              </li>
-              <li>
-                <Link className="hover:text-medical-300" to="/features">
-                  Features
-                </Link>
-              </li>
-              <li>
-                <Link className="hover:text-medical-300" to="/how-it-works">
-                  How it works
-                </Link>
-              </li>
-              <li>
-                <Link className="hover:text-medical-300" to="/contact">
-                  Contact
-                </Link>
-              </li>
+            <h2 className="text-[11px] font-medium uppercase tracking-[.14em] text-white/45">Company</h2>
+            <ul className="mt-4 space-y-2.5 text-sm">
+              {[
+                ['/about', 'About us'],
+                ['/solutions', 'Solutions'],
+                ['/features', 'Features'],
+                ['/how-it-works', 'How it works'],
+                ['/contact', 'Contact'],
+              ].map(([to, label]) => (
+                <li key={to}>
+                  <Link className="transition-colors hover:text-white" to={to}>
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
+
           <div>
-            <h2 className="text-sm font-bold text-white">Account</h2>
-            <ul className="mt-4 space-y-3 text-sm">
+            <h2 className="text-[11px] font-medium uppercase tracking-[.14em] text-white/45">Account</h2>
+            <ul className="mt-4 space-y-2.5 text-sm">
               <li>
-                <Link className="hover:text-medical-300" to="/login">
-                  Login
+                <Link className="transition-colors hover:text-white" to="/login">
+                  Sign in
                 </Link>
               </li>
               <li>
-                <Link className="hover:text-medical-300" to="/register">
-                  Register
+                <Link className="transition-colors hover:text-white" to="/register">
+                  Create account
                 </Link>
               </li>
               {email && (
                 <li>
-                  <a className="flex items-center gap-2 hover:text-medical-300" href={`mailto:${email}`}>
-                    <Mail className="h-4 w-4" /> <span className="break-all">{email}</span>
+                  <a className="flex items-center gap-2 transition-colors hover:text-white" href={`mailto:${email}`}>
+                    <Mail className="h-4 w-4 shrink-0" /> <span className="break-all">{email}</span>
                   </a>
                 </li>
               )}
               {agency?.contact?.phone && (
                 <li>
-                  <a className="flex items-center gap-2 hover:text-medical-300" href={`tel:${agency.contact.phone}`}>
-                    <Phone className="h-4 w-4" /> {agency.contact.phone}
+                  <a
+                    className="flex items-center gap-2 transition-colors hover:text-white"
+                    href={`tel:${agency.contact.phone}`}
+                  >
+                    <Phone className="h-4 w-4 shrink-0" /> {agency.contact.phone}
                   </a>
                 </li>
               )}
               {addressText && (
                 <li>
                   <span className="flex items-start gap-2">
-                    <MapPin className="mt-0.5 h-4 w-4" /> <span className="whitespace-pre-line">{addressText}</span>
+                    <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+                    <span className="whitespace-pre-line">{addressText}</span>
                   </span>
                 </li>
               )}
             </ul>
           </div>
         </div>
-        <div className="mt-12 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+
+        <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
           <p>
             &copy; {new Date().getFullYear()} {agencyName}. All rights reserved.
           </p>
           <div className="flex flex-wrap gap-5">
-            <Link to="/privacy" className="hover:text-white">
+            <Link to="/privacy" className="transition-colors hover:text-white">
               Privacy
             </Link>
-            <Link to="/terms" className="hover:text-white">
+            <Link to="/terms" className="transition-colors hover:text-white">
               Terms
             </Link>
-            <Link to="/contact" className="hover:text-white">
+            <Link to="/contact" className="transition-colors hover:text-white">
               Contact
             </Link>
           </div>

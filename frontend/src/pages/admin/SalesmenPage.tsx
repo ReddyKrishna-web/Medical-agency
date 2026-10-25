@@ -173,13 +173,13 @@ export default function SalesmenPage() {
             <BriefcaseBusiness className="h-4 w-4" />
           </span>
           <div className="min-w-0">
-            <p className="truncate font-bold text-slate-800">{employeeName(item)}</p>
-            <p className="truncate text-xs text-slate-400">{employeeEmail(item)}</p>
+            <p className="truncate text-[13.5px] font-medium text-charcoal">{employeeName(item)}</p>
+            <p className="truncate text-xs text-muted">{employeeEmail(item)}</p>
           </div>
         </div>
       ),
     },
-    { key: 'code', header: 'Employee code', render: (item) => <code className="text-xs text-slate-600">{item.employeeCode}</code> },
+    { key: 'code', header: 'Employee code', render: (item) => <code className="whitespace-nowrap text-[11px] text-navy-700">{item.employeeCode}</code> },
     { key: 'territory', header: 'Territory', render: (item) => item.territory || '—', mobileLabel: false },
     {
       key: 'phone',
@@ -227,7 +227,7 @@ export default function SalesmenPage() {
           </button>
           {item.status === 'ACTIVE' ? (
             <button
-              className="font-semibold text-slate-500"
+              className="text-[13px] font-medium text-navy-700"
               onClick={(event) => {
                 event.stopPropagation();
                 setNote('');
@@ -238,7 +238,7 @@ export default function SalesmenPage() {
             </button>
           ) : (
             <button
-              className="inline-flex items-center gap-1 font-semibold text-medical-700"
+              className="inline-flex items-center gap-1 text-[13px] font-medium text-brand-700"
               onClick={(event) => {
                 event.stopPropagation();
                 statusChange.mutate({ id: item.id, next: 'ACTIVE' });
@@ -275,7 +275,7 @@ export default function SalesmenPage() {
       <Card className="mb-5 p-4">
         <div className="grid gap-3 lg:grid-cols-2">
           <div className="relative">
-            <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-muted" />
             <TextInput
               aria-label="Search sales representatives"
               value={search}
@@ -495,10 +495,10 @@ export default function SalesmenPage() {
             const checked = assignIds.includes(customer.id);
             return (
               <li key={customer.id}>
-                <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 p-3 hover:bg-brand-50">
+                <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-line p-3 transition-colors hover:bg-ivory">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-slate-300 text-brand-600"
+                    className="h-4 w-4 rounded border-line text-brand-600"
                     checked={checked}
                     onChange={(event) =>
                       setAssignIds((current) =>
@@ -509,8 +509,8 @@ export default function SalesmenPage() {
                     }
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-slate-800">{customer.businessName}</span>
-                    <span className="block truncate text-xs text-slate-400">
+                    <span className="block truncate text-[13px] font-medium text-charcoal">{customer.businessName}</span>
+                    <span className="block truncate text-xs text-muted">
                       {customer.ownerName} - {customer.address?.city || '—'}
                     </span>
                   </span>
@@ -520,7 +520,7 @@ export default function SalesmenPage() {
             );
           })}
           {!assignableCustomers.isLoading && !(assignableCustomers.data ?? []).length && (
-            <li className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">No customer accounts are available.</li>
+            <li className="rounded-lg bg-ivory p-4 text-[13px] text-muted">No customer accounts are available.</li>
           )}
         </ul>
       </Modal>
@@ -569,7 +569,7 @@ export default function SalesmenPage() {
         }
       >
         <div className="space-y-4">
-          <div className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+          <div className="flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-[13px] leading-6 text-amber-900">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
             <p>
               <strong>Password change required.</strong> {employeeNameOf(credential)} must replace this password at first
@@ -580,7 +580,7 @@ export default function SalesmenPage() {
             <TextInput id="temporary-password" readOnly value={credential?.temporaryPassword ?? ''} className="font-mono" />
           </Field>
           {credential?.employeeCode && (
-            <p className="text-sm text-slate-500">
+            <p className="text-[13px] text-muted">
               Employee code: <strong>{credential.employeeCode}</strong>
             </p>
           )}

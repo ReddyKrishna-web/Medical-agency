@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Building2, Boxes, PackagePlus, Search, Users } from 'lucide-react';
+import { Boxes, PackagePlus, Search, Users } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { apiMeta } from '@/lib/api';
 import { mapCategories, mapProducts, productAvailability, productStock } from '@/lib/adapters';
@@ -199,9 +199,9 @@ export default function CatalogPage() {
               const stock = productStock(product);
               const state = productAvailability(product);
               return (
-                <article key={product.id} className="flex min-h-64 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft">
-                  <div className="grid h-32 place-items-center bg-slate-50">
-                    {product.imageUrl ? (
+                <article key={product.id} className="flex h-full min-h-64 flex-col overflow-hidden rounded-lg border border-line bg-white">
+                  {product.imageUrl && (
+                    <div className="grid h-32 place-items-center border-b border-line/70 bg-ivory">
                       <img
                         src={product.imageUrl}
                         alt=""
@@ -211,35 +211,35 @@ export default function CatalogPage() {
                           event.currentTarget.style.display = 'none';
                         }}
                       />
-                    ) : (
-                      <Building2 className="h-10 w-10 text-slate-300" aria-hidden="true" />
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <div className="flex flex-1 flex-col p-4">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-brand-700">
-                      {[product.brand, product.manufacturer, product.category?.name].filter(Boolean)[0] ?? 'Medical product'}
-                    </p>
-                    <h2 className="mt-1.5 line-clamp-2 font-extrabold leading-6 text-ink">{product.name}</h2>
-                    {product.genericName && <p className="mt-1 text-xs text-slate-500">Generic: {product.genericName}</p>}
-                    <p className="mt-1 text-xs text-slate-400">{product.sku}</p>
-                    <dl className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-500">
+                    <div className="min-h-[102px]">
+                      <p className="text-[10px] font-medium uppercase tracking-[.14em] text-muted">
+                        {[product.brand, product.manufacturer, product.category?.name].filter(Boolean)[0] ?? 'Medical product'}
+                      </p>
+                      <h2 className="mt-1.5 line-clamp-2 text-[14px] font-semibold leading-6 text-charcoal">{product.name}</h2>
+                      {product.genericName && <p className="mt-1 text-xs text-muted">Generic: {product.genericName}</p>}
+                      <p className="mt-1 text-[11px] text-navy-400">{product.sku}</p>
+                    </div>
+                    <dl className="mt-3 grid grid-cols-2 gap-2 border-t border-line/70 pt-3 text-xs">
                       <div>
-                        <dt className="font-semibold text-slate-400">Pack size</dt>
-                        <dd className="mt-0.5 font-bold text-slate-700">{product.packSize || product.unit}</dd>
+                        <dt className="text-[10px] uppercase tracking-[.1em] text-muted">Pack size</dt>
+                        <dd className="mt-1 font-medium text-charcoal">{product.packSize || product.unit}</dd>
                       </div>
                       <div>
-                        <dt className="font-semibold text-slate-400">Available</dt>
-                        <dd className="mt-0.5 font-bold text-slate-700">
+                        <dt className="text-[10px] uppercase tracking-[.1em] text-muted">Available</dt>
+                        <dd className="mt-1 font-medium text-charcoal">
                           {stock === undefined ? '—' : formatNumber(stock)}
                         </dd>
                       </div>
                     </dl>
                     <div className="mt-auto flex items-end justify-between gap-3 pt-4">
                       <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Business price</p>
-                        <p className="font-extrabold text-ink">{formatCurrency(product.price)}</p>
+                        <p className="text-[10px] uppercase tracking-[.1em] text-muted">Business price</p>
+                        <p className="mt-0.5 text-[15px] font-semibold text-charcoal">{formatCurrency(product.price)}</p>
                         {product.mrp !== undefined && product.mrp > 0 && (
-                          <p className="text-[10px] text-slate-400">MRP {formatCurrency(product.mrp)}</p>
+                          <p className="text-[10px] text-muted">MRP {formatCurrency(product.mrp)}</p>
                         )}
                       </div>
                       {state && <Badge value={state} />}
@@ -261,7 +261,7 @@ export default function CatalogPage() {
         </>
       )}
 
-      <p className="mt-5 flex items-center gap-2 text-xs text-slate-400">
+      <p className="mt-5 flex items-center gap-2 text-xs text-muted">
         <Users className="h-4 w-4" />
         Availability is resolved from live inventory. Stock thresholds are not exposed to customer accounts.
       </p>

@@ -44,8 +44,8 @@ export default function CustomersPage() {
             <Building2 className="h-4 w-4" />
           </span>
           <div>
-            <p className="font-bold text-slate-800">{customer.businessName}</p>
-            <p className="text-xs text-slate-400">{customer.address?.city || '—'}</p>
+            <p className="text-[13.5px] font-medium text-charcoal">{customer.businessName}</p>
+            <p className="text-xs text-muted">{customer.address?.city || '—'}</p>
           </div>
         </div>
       ),
@@ -56,7 +56,7 @@ export default function CustomersPage() {
       render: (customer) => (
         <div>
           <p>{customer.ownerName}</p>
-          <p className="text-xs text-slate-400">{customer.phone || 'No phone recorded'}</p>
+          <p className="text-xs text-muted">{customer.phone || 'No phone recorded'}</p>
         </div>
       ),
     },
@@ -88,7 +88,7 @@ export default function CustomersPage() {
 
       <Card className="mb-4 p-4">
         <div className="relative">
-          <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-muted" />
           <TextInput
             aria-label="Search assigned customers"
             value={search}

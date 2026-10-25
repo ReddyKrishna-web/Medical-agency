@@ -178,8 +178,8 @@ export default function CustomersPage() {
       header: 'Business',
       render: (item) => (
         <div>
-          <p className="font-bold text-slate-800">{item.businessName}</p>
-          <p className="text-xs text-slate-400">{item.ownerName}</p>
+          <p className="text-[13.5px] font-medium text-charcoal">{item.businessName}</p>
+          <p className="text-xs text-muted">{item.ownerName}</p>
         </div>
       ),
     },
@@ -187,9 +187,9 @@ export default function CustomersPage() {
       key: 'contact',
       header: 'Phone',
       render: (item) => (
-        <div>
+        <div className="whitespace-nowrap">
           <p>{item.phone || '—'}</p>
-          {item.alternatePhone && <p className="text-xs text-slate-400">{item.alternatePhone}</p>}
+          {item.alternatePhone && <p className="text-xs text-muted">{item.alternatePhone}</p>}
         </div>
       ),
     },
@@ -200,9 +200,9 @@ export default function CustomersPage() {
       header: 'Assigned salesman',
       render: (item) =>
         item.assignedSalesman?.employeeCode ? (
-          <span className="font-semibold text-slate-700">{item.assignedSalesman.employeeCode}</span>
+          <span className="text-[13px] font-medium text-charcoal">{item.assignedSalesman.employeeCode}</span>
         ) : (
-          <span className="text-slate-400">Unassigned</span>
+          <span className="text-muted">Unassigned</span>
         ),
       mobileLabel: false,
     },
@@ -214,7 +214,7 @@ export default function CustomersPage() {
         item.lastOrderAt ? (
           <div>
             <p className="font-semibold">{formatDate(item.lastOrderAt)}</p>
-            {item.lastOrderNumber && <p className="text-xs text-slate-400">{item.lastOrderNumber}</p>}
+            {item.lastOrderNumber && <p className="text-xs text-muted">{item.lastOrderNumber}</p>}
           </div>
         ) : (
           <span className="text-slate-400">—</span>
@@ -225,7 +225,7 @@ export default function CustomersPage() {
       key: 'credit',
       header: 'Credit',
       render: (item) => (
-        <span className="text-xs">
+        <span className="whitespace-nowrap text-xs tabular-nums text-navy-700">
           {formatCurrency(item.creditUsed)} / {formatCurrency(item.creditLimit)}
         </span>
       ),
@@ -239,7 +239,7 @@ export default function CustomersPage() {
           {item.status === 'PENDING' && (
             <>
               <button
-                className="inline-flex items-center gap-1 font-semibold text-medical-700"
+                className="inline-flex items-center gap-1 text-[13px] font-medium text-brand-700"
                 onClick={(event) => {
                   event.stopPropagation();
                   statusChange.mutate({ id: item.id, value: 'APPROVED' });
@@ -248,7 +248,7 @@ export default function CustomersPage() {
                 <Check className="h-3.5 w-3.5" /> Approve
               </button>
               <button
-                className="inline-flex items-center gap-1 font-semibold text-red-600"
+                className="inline-flex items-center gap-1 text-[13px] font-medium text-red-700"
                 onClick={(event) => {
                   event.stopPropagation();
                   setNote('');
@@ -261,7 +261,7 @@ export default function CustomersPage() {
           )}
           {item.status === 'ACTIVE' && (
             <button
-              className="font-semibold text-slate-500"
+              className="text-[13px] font-medium text-navy-600"
               onClick={(event) => {
                 event.stopPropagation();
                 statusChange.mutate({ id: item.id, value: 'DISABLED' });
@@ -272,7 +272,7 @@ export default function CustomersPage() {
           )}
           {item.status === 'DISABLED' && (
             <button
-              className="inline-flex items-center gap-1 font-semibold text-medical-700"
+              className="inline-flex items-center gap-1 text-[13px] font-medium text-brand-700"
               onClick={(event) => {
                 event.stopPropagation();
                 statusChange.mutate({ id: item.id, value: 'ACTIVE' });
@@ -282,7 +282,7 @@ export default function CustomersPage() {
             </button>
           )}
           <button
-            className="inline-flex items-center gap-1 font-semibold text-brand-700"
+            className="inline-flex items-center gap-1 text-[13px] font-medium text-brand-700"
             onClick={(event) => {
               event.stopPropagation();
               setEditing(item);
@@ -301,7 +301,7 @@ export default function CustomersPage() {
       <PageHeader
         eyebrow="Account management"
         title="Customers"
-        description="Approve registrations, keep business details current and assign an account team."
+        description="Manage account status, keep business details current and assign an account team."
         actions={
           <Button
             onClick={() => {
@@ -366,6 +366,7 @@ export default function CustomersPage() {
         <DataTable
           columns={columns}
           rows={rows}
+          minWidth="1000px"
           getKey={(item) => item.id}
           loading={query.isLoading}
           error={query.error}

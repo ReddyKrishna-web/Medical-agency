@@ -109,32 +109,32 @@ export default function ReorderPage() {
         <div className="grid gap-4 lg:grid-cols-2">
           {rows.map((order) => (
             <Card key={order.id} className="overflow-hidden">
-              <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3 border-b border-line p-5">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wider text-brand-700">Previous order</p>
-                  <h2 className="mt-1 text-lg font-extrabold text-ink">{order.orderNumber}</h2>
-                  <p className="mt-1 text-sm text-slate-500">
+                  <h2 className="mt-1 font-display text-base font-semibold text-charcoal">{order.orderNumber}</h2>
+                  <p className="mt-1 text-[13px] text-muted">
                     {formatDate(order.createdAt, 'dd MMM yyyy, HH:mm')} - {order.items.length} line items
                   </p>
                 </div>
                 <div className="text-right">
                   <Badge value={order.status} />
-                  <p className="mt-2 text-sm font-extrabold text-ink">{formatCurrency(order.grandTotal, order.currency)}</p>
+                  <p className="mt-2 text-[13px] font-semibold text-charcoal">{formatCurrency(order.grandTotal, order.currency)}</p>
                 </div>
               </div>
               <CardBody>
                 <ul className="mb-4 space-y-2">
                   {order.items.slice(0, 4).map((item) => (
                     <li key={item.productId} className="flex justify-between gap-4 text-sm">
-                      <span className="min-w-0 truncate text-slate-700">
+                      <span className="min-w-0 truncate text-charcoal">
                         {item.productName}
-                        <span className="text-xs text-slate-400"> ({item.sku})</span>
+                        <span className="text-xs text-muted"> ({item.sku})</span>
                       </span>
-                      <span className="shrink-0 font-semibold text-slate-500">{formatNumber(item.quantity)}</span>
+                      <span className="shrink-0 text-[13px] font-medium tabular-nums text-muted">{formatNumber(item.quantity)}</span>
                     </li>
                   ))}
                   {order.items.length > 4 && (
-                    <li className="text-xs font-semibold text-slate-400">+ {order.items.length - 4} more line items</li>
+                    <li className="text-xs font-medium text-muted">+ {order.items.length - 4} more line items</li>
                   )}
                 </ul>
                 <Button className="w-full" loading={reorder.isPending} onClick={() => reorder.mutate(order)}>

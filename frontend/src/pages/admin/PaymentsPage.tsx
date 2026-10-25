@@ -110,8 +110,8 @@ export default function PaymentsPage() {
       header: 'Reference',
       render: (item) => (
         <div>
-          <p className="font-bold text-slate-800">{item.reference || '—'}</p>
-          {item.invoiceNumber && <p className="text-xs text-slate-400">Invoice {item.invoiceNumber}</p>}
+          <p className="text-[13.5px] font-medium text-charcoal">{item.reference || '—'}</p>
+          {item.invoiceNumber && <p className="text-xs text-muted">Invoice {item.invoiceNumber}</p>}
         </div>
       ),
     },
@@ -119,7 +119,7 @@ export default function PaymentsPage() {
     {
       key: 'amount',
       header: 'Amount',
-      render: (item) => <span className="font-extrabold text-slate-800">{formatCurrency(item.amount)}</span>,
+      render: (item) => <span className="text-[13px] font-semibold tabular-nums text-charcoal">{formatCurrency(item.amount)}</span>,
     },
     { key: 'method', header: 'Method', render: (item) => <Badge value={item.method} tone="blue" /> },
     { key: 'paidAt', header: 'Paid at', render: (item) => formatDate(item.paidAt), mobileLabel: false },
@@ -147,7 +147,7 @@ export default function PaymentsPage() {
       <Card className="mb-5 p-4">
         <div className="grid gap-3 lg:grid-cols-2">
           <div className="relative">
-            <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-muted" />
             <TextInput
               aria-label="Search payments"
               value={search}
@@ -308,7 +308,7 @@ export default function PaymentsPage() {
           <Field id="payment-note" label="Note" hint="Optional">
             <TextInput id="payment-note" value={form.note} onChange={(event) => setForm({ ...form, note: event.target.value })} />
           </Field>
-          <div className="flex items-start gap-2 rounded-xl bg-slate-50 p-3 text-xs leading-5 text-slate-500">
+          <div className="flex items-start gap-2 rounded-md bg-ivory p-3 text-xs leading-5 text-muted">
             <CreditCard className="mt-0.5 h-4 w-4 shrink-0" />
             <p>No card data is collected. Recording a payment asserts that a payment happened outside this platform.</p>
           </div>

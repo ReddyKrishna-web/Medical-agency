@@ -33,7 +33,14 @@ authRouter.post(
 
 authRouter.post('/login', authLimiter, validate({ body: loginSchema }), asyncHandler(controller.login));
 
-authRouter.post('/refresh', authLimiter, asyncHandler(controller.refresh));
+/**
+ * Session renewal is not a credential endpoint: it is driven by the HttpOnly
+ * refresh cookie on every cold page load, and a signed-out visitor always gets a
+ * 401 here. Counting those against the strict sign-in limiter would lock real
+ * users out of /auth/login after repeated visits from one IP, so only the global
+ * API limiter applies. Rotation and reuse detection still protect the token.
+ */
+authRouter.post('/refresh', asyncHandler(controller.refresh));
 
 authRouter.post('/logout', asyncHandler(controller.logout));
 

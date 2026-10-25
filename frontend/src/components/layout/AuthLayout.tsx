@@ -1,108 +1,100 @@
-import { Link, Outlet } from 'react-router-dom';
-import { Activity, ArrowLeft, ShieldCheck, Star, Truck, UserCheck } from 'lucide-react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 
-const trust = [
-  {
-    icon: Truck,
-    title: 'Order to delivery in one flow',
-    text: 'Fill the basket, confirm your agency and follow every step through dispatch.',
-  },
-  {
-    icon: UserCheck,
-    title: 'Built for three roles',
-    text: 'Agencies administer, salesmen mediate, and medical shops order in minutes.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Secure by default',
-    text: 'HttpOnly refresh sessions, short-lived access tokens and tenant-isolated data.',
-  },
+const facts = [
+  ['Three roles', 'Agency administrators, sales representatives and medical shops work from one record.'],
+  ['Batch aware', 'Earliest-expiry allocation and signed stock movements keep inventory accountable.'],
+  ['Tenant isolated', 'Short-lived access tokens and scoped queries protect each organisation.'],
 ];
 
-const stats = [
-  { value: '3', label: 'connected roles' },
-  { value: 'FEFO', label: 'batch-aware stock' },
-  { value: '24/7', label: 'order tracking' },
-];
+const highlights: Record<string, { eyebrow: string; headline: string; accent: string }> = {
+  '/login': {
+    eyebrow: 'Welcome back',
+    headline: 'The medical supply chain,',
+    accent: ' finally connected.',
+  },
+  '/register': {
+    eyebrow: 'Create account',
+    headline: 'Your distribution workspace,',
+    accent: ' ready in minutes.',
+  },
+};
 
-/**
- * Shared shell for the auth pages. The brand panel rotates its highlight
- * statement per route via the pathname, giving login and register distinct
- * messaging without duplicating layout markup.
- */
+const fallbackHighlight = {
+  eyebrow: 'Account access',
+  headline: 'Secure business access.',
+  accent: ' In one place.',
+};
+
 export default function AuthLayout() {
+  const { pathname } = useLocation();
+  const highlight = highlights[pathname] ?? fallbackHighlight;
+
   return (
-    <div className="flex min-h-screen bg-canvas">
-      {/* Brand panel */}
-      <aside className="relative hidden w-[46%] max-w-2xl flex-col justify-between overflow-hidden bg-ink p-10 text-white xl:p-14 lg:flex">
-        <div className="absolute -right-40 -top-40 h-[30rem] w-[30rem] rounded-full bg-medical-500/20 blur-3xl" />
-        <div className="absolute -bottom-40 -left-32 h-[26rem] w-[26rem] rounded-full bg-brand-500/20 blur-3xl" />
+    <div className="flex min-h-screen bg-ivory">
+      <aside className="relative hidden w-[44%] max-w-[560px] overflow-hidden text-white lg:flex lg:flex-col">
+        <img
+          src="/images/auth-pharmacist.jpg"
+          alt="A medical-distribution pharmacist standing in front of organised medicine shelves"
+          width={1600}
+          height={2400}
+          loading="eager"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover object-[50%_35%]"
+        />
         <div
-          className="absolute inset-0 opacity-25"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 15% 20%, rgba(34,173,120,.4), transparent 26%), radial-gradient(circle at 85% 80%, rgba(31,130,245,.35), transparent 24%)',
-          }}
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-b from-charcoal/55 via-brand-950/85 to-brand-950/95"
         />
 
-        <div className="relative">
+        <div className="relative flex h-full flex-1 flex-col justify-between p-10 xl:p-14">
           <Logo light />
-        </div>
 
-        <div className="relative max-w-md">
-          <span className="mb-6 inline-flex rounded-full border border-medical-400/30 bg-medical-400/10 p-3 text-medical-300">
-            <Activity className="h-6 w-6" />
-          </span>
-          <h1 className="text-4xl font-extrabold leading-[1.15] tracking-tight">
-            The medical supply chain,
-            <span className="text-medical-300"> finally connected.</span>
-          </h1>
-          <ul className="mt-9 space-y-5">
-            {trust.map((item) => (
-              <li key={item.title} className="flex gap-4">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[.08] text-medical-300 ring-1 ring-white/10">
-                  <item.icon className="h-5 w-5" />
-                </span>
-                <div>
-                  <p className="text-sm font-extrabold">{item.title}</p>
-                  <p className="mt-1 text-sm leading-6 text-slate-400">{item.text}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+          <div className="max-w-sm">
+            <p className="text-[11px] font-medium uppercase tracking-[.16em] text-sage/80">
+              {highlight.eyebrow}
+            </p>
+            <h1 className="mt-4 font-display text-[34px] font-semibold leading-[1.2] tracking-[-0.02em]">
+              {highlight.headline}
+              <span className="text-sage">{highlight.accent}</span>
+            </h1>
+            <p className="mt-5 text-sm leading-7 text-white/70">
+              A calm, dependable workspace for medical distribution — from catalogue and stock through to invoice and
+              delivery.
+            </p>
 
-        <div className="relative">
-          <dl className="flex gap-8 border-t border-white/10 pt-6">
-            {stats.map((stat) => (
-              <div key={stat.label}>
-                <dt className="order-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500">{stat.label}</dt>
-                <dd className="order-1 text-2xl font-extrabold text-medical-300">{stat.value}</dd>
-              </div>
-            ))}
-          </dl>
-          <p className="mt-6 flex items-center gap-1.5 text-xs text-slate-500">
-            <Star className="h-3.5 w-3.5 text-medical-400" /> Trusted by medical distributors and neighbourhood pharmacies
+            <ul className="mt-10 divide-y divide-white/10 border-y border-white/10">
+              {facts.map(([title, text]) => (
+                <li key={title} className="py-4">
+                  <p className="text-[13px] font-medium text-white">{title}</p>
+                  <p className="mt-1 text-[13px] leading-6 text-white/60">{text}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <p className="max-w-xs text-xs leading-5 text-white/50">
+            Operational software for medical distribution. It does not provide diagnosis, treatment or clinical advice.
           </p>
         </div>
       </aside>
 
-      {/* Form panel */}
-      <main id="main-content" className="relative flex min-h-screen flex-1 flex-col">
-        <header className="flex items-center justify-between p-5 sm:p-7">
+      <main id="main-content" className="flex min-h-screen flex-1 flex-col bg-ivory">
+        <div className="flex items-center justify-between p-5 sm:p-7">
           <div className="lg:hidden">
             <Logo />
           </div>
           <Link
             to="/"
-            className="ml-auto inline-flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-semibold text-slate-500 transition hover:text-brand-700"
+            className="ml-auto inline-flex items-center gap-2 rounded-md px-2 py-1 text-[13px] font-medium text-muted transition-colors hover:text-charcoal"
           >
             <ArrowLeft className="h-4 w-4" /> Back to website
           </Link>
-        </header>
+        </div>
+
         <div className="flex flex-1 items-start justify-center px-4 pb-16 sm:px-8 lg:items-center">
-          <div className="w-full max-w-lg">
+          <div className="w-full max-w-md">
             <Outlet />
           </div>
         </div>

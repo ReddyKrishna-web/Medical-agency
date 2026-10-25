@@ -10,12 +10,17 @@ import { humanize } from '@/lib/status';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardBody, CardHeader } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import { Field, SelectInput, TextInput } from '@/components/ui/Form';
 import { DataTable, type Column } from '@/components/ui/DataTable';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States';
 import type { ExportType } from '@/types/api';
 
 const EXPORT_TYPES: ExportType[] = ['orders', 'customers', 'products', 'salesmen', 'inventory', 'invoices', 'payments'];
+
+/** The API exposes on-screen reports for these types only; the rest are CSV exports. */
+type ViewType = 'orders' | 'customers' | 'products' | 'salesmen' | 'inventory';
+const VIEW_TYPES: ViewType[] = ['orders', 'customers', 'products', 'salesmen', 'inventory'];
 
 const TITLES: Record<ExportType, string> = {
   orders: 'Orders report',
@@ -25,6 +30,61 @@ const TITLES: Record<ExportType, string> = {
   inventory: 'Inventory report',
   invoices: 'Invoices report',
   payments: 'Payments report',
+};
+
+type CellKind = 'text' | 'number' | 'money' | 'date' | 'status';
+
+interface ReportColumn {
+  key: string;
+  label: string;
+  kind?: CellKind;
+}
+
+/** Curated columns per report so document ids and JSON blobs never reach the table. */
+const REPORT_COLUMNS: Record<ViewType, ReportColumn[]> = {
+  orders: [
+    { key: 'orderNumber', label: 'Order' },
+    { key: 'customerName', label: 'Customer' },
+    { key: 'status', label: 'Status', kind: 'status' },
+    { key: 'itemCount', label: 'Lines', kind: 'number' },
+    { key: 'units', label: 'Units', kind: 'number' },
+    { key: 'grandTotal', label: 'Value', kind: 'money' },
+    { key: 'createdAt', label: 'Placed', kind: 'date' },
+  ],
+  customers: [
+    { key: 'businessName', label: 'Business' },
+    { key: 'city', label: 'City' },
+    { key: 'status', label: 'Status', kind: 'status' },
+    { key: 'orderCount', label: 'Orders', kind: 'number' },
+    { key: 'orderValue', label: 'Value', kind: 'money' },
+    { key: 'lastOrderAt', label: 'Last order', kind: 'date' },
+  ],
+  products: [
+    { key: 'productName', label: 'Product' },
+    { key: 'sku', label: 'SKU' },
+    { key: 'unitsSold', label: 'Units sold', kind: 'number' },
+    { key: 'revenue', label: 'Revenue', kind: 'money' },
+    { key: 'stockOnHand', label: 'On hand', kind: 'number' },
+    { key: 'stockValue', label: 'Stock value', kind: 'money' },
+    { key: 'earliestExpiry', label: 'Earliest expiry', kind: 'date' },
+  ],
+  salesmen: [
+    { key: 'name', label: 'Representative' },
+    { key: 'employeeCode', label: 'Code' },
+    { key: 'assignedCustomers', label: 'Customers', kind: 'number' },
+    { key: 'orders', label: 'Orders', kind: 'number' },
+    { key: 'revenue', label: 'Revenue', kind: 'money' },
+    { key: 'averageOrderValue', label: 'Average order', kind: 'money' },
+  ],
+  inventory: [
+    { key: 'productName', label: 'Product' },
+    { key: 'batchNumber', label: 'Batch' },
+    { key: 'quantityAvailable', label: 'Available', kind: 'number' },
+    { key: 'expiryDate', label: 'Expires', kind: 'date' },
+    { key: 'stockValue', label: 'Stock value', kind: 'money' },
+    { key: 'location', label: 'Location' },
+    { key: 'status', label: 'Status', kind: 'status' },
+  ],
 };
 
 const numberish = (value: unknown) => (typeof value === 'number' ? value : Number(value));
@@ -40,6 +100,13 @@ function cell(key: string, value: unknown): string {
   if (typeof value === 'object') return JSON.stringify(value);
   return String(value);
 }
+
+const labelFor = (key: string): string =>
+  key
+    .replaceAll('_', ' ')
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/^./, (character) => character.toUpperCase());
+
 
 /** Adapts the real nested report shapes to a table + bar chart. */
 function extract(type: ExportType, payload: unknown) {
@@ -94,22 +161,34 @@ export default function ReportsPage() {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [exporting, setExporting] = useState(false);
+  const onScreen = (VIEW_TYPES as ExportType[]).includes(type);
 
   const query = useQuery({
     queryKey: ['reports', type, { from, to }],
     queryFn: () => api<unknown>(`/reports/${type}`, { params: { from: from || undefined, to: to || undefined } }),
     placeholderData: (previous) => previous,
     retry: false,
+    enabled: onScreen,
   });
 
   const { rows, totals, chart } = extract(type, query.data);
 
-  const keys = Array.from(new Set(rows.slice(0, 20).flatMap((row) => Object.keys(row)))).slice(0, 9);
-  const columns: Column<Record<string, unknown>>[] = keys.map((key) => ({
-    key,
-    header: key.replaceAll('_', ' '),
-    render: (row) => cell(key, row[key]),
-  }));
+  const columns: Column<Record<string, unknown>>[] = (onScreen ? REPORT_COLUMNS[type as ViewType] : []).map(
+    (column) => ({
+      key: column.key,
+      header: column.label,
+      render: (row) => {
+        const value = row[column.key];
+        if (column.kind === 'status') {
+          return value ? <Badge value={String(value)} /> : <span className="text-muted">—</span>;
+        }
+        if (column.kind === 'money' || column.kind === 'number' || column.kind === 'date') {
+          return <span className="whitespace-nowrap tabular-nums">{cell(column.key, value)}</span>;
+        }
+        return <span className="block max-w-[260px] truncate">{cell(column.key, value)}</span>;
+      },
+    }),
+  );
 
   const exportCsv = async () => {
     setExporting(true);
@@ -168,61 +247,89 @@ export default function ReportsPage() {
           {Object.entries(totals)
             .slice(0, 8)
             .map(([key, value]) => (
-              <div key={key} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-soft">
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{key.replaceAll('_', ' ')}</p>
-                <p className="mt-2 text-xl font-extrabold text-ink">{cell(key, value)}</p>
+              <div key={key} className="rounded-lg border border-line bg-white p-4">
+                <p className="text-[10px] font-medium uppercase tracking-[.12em] text-muted">{labelFor(key)}</p>
+                <p className="mt-1.5 text-[18px] font-semibold tabular-nums text-charcoal">{cell(key, value)}</p>
               </div>
             ))}
         </div>
       )}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <Card className="overflow-hidden">
-          <CardHeader
+      <Card className="overflow-hidden">
+        <CardHeader
             title={TITLES[type]}
-            description={`${rows.length} row${rows.length === 1 ? '' : 's'} returned for the selected filters`}
-            action={<FileSpreadsheet className="h-5 w-5 text-slate-400" />}
+            description={
+              onScreen
+                ? `${rows.length} row${rows.length === 1 ? '' : 's'} returned for the selected filters`
+                : 'On-screen report unavailable — use Export CSV'
+            }
+            action={<FileSpreadsheet className="h-5 w-5 text-navy-400" />}
           />
-          <DataTable
-            columns={columns}
-            rows={rows}
-            getKey={(row) => String(row.id ?? row.employeeCode ?? row.invoiceNumber ?? row.businessName ?? '')}
-            loading={query.isLoading}
-            error={query.error}
-            onRetry={() => void query.refetch()}
-            emptyTitle="No report data"
-            emptyDescription="The service returned no rows for these date filters."
-          />
-        </Card>
+          {onScreen ? (
+            <DataTable
+              columns={columns}
+              rows={rows}
+              getKey={(row) => String(row.id ?? row._id ?? row.employeeCode ?? row.orderNumber ?? row.batchNumber ?? '')}
+              minWidth="720px"
+              loading={query.isLoading}
+              error={query.error}
+              onRetry={() => void query.refetch()}
+              emptyTitle="No report data"
+              emptyDescription="The service returned no rows for these date filters."
+            />
+          ) : (
+            <EmptyState
+              icon={FileSpreadsheet}
+              title="This report is export-only"
+              description="The service exposes invoices and payments as CSV exports, not as an on-screen report. Use Export CSV to download the same data."
+              action={
+                <Button onClick={() => void exportCsv()} loading={exporting}>
+                  <Download className="h-4 w-4" /> Export CSV
+                </Button>
+              }
+            />
+          )}
+      </Card>
 
-        <Card>
+      {onScreen && (
+        <Card className="mt-5">
           <CardHeader title="Comparison view" description="Only labelled numeric values are charted." />
-          <CardBody className="h-96">
-            {query.isLoading ? (
-              <LoadingState rows={5} />
-            ) : query.error ? (
-              <ErrorState error={query.error} onRetry={() => void query.refetch()} />
-            ) : chart.length ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chart} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
-                  <XAxis type="number" tick={{ fontSize: 11, fill: '#64748b' }} />
-                  <YAxis type="category" dataKey="label" width={110} tick={{ fontSize: 10, fill: '#64748b' }} />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#1f82f5" radius={[0, 6, 6, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <EmptyState
-                title="No chartable values"
-                description="This report may contain only totals or document-level rows."
-              />
-            )}
+          <CardBody className="h-72">
+              {query.isLoading ? (
+                <LoadingState rows={5} />
+              ) : query.error ? (
+                <ErrorState error={query.error} onRetry={() => void query.refetch()} />
+              ) : chart.length ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chart} layout="vertical" margin={{ top: 4, right: 12, bottom: 4, left: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e5de" />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: '#5f665f' }} axisLine={false} tickLine={false} />
+                    <YAxis
+                      type="category"
+                      dataKey="label"
+                      width={104}
+                      tick={{ fontSize: 10, fill: '#5f665f' }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      formatter={(value) => formatNumber(Number(value))}
+                      contentStyle={{ borderRadius: 8, borderColor: '#e5e5de', fontSize: 12 }}
+                    />
+                    <Bar dataKey="value" fill="#35584b" barSize={18} radius={[0, 4, 4, 0]} isAnimationActive={false} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <EmptyState
+                  title="No chartable values"
+                  description="This report may contain only totals or document-level rows."
+                />
+              )}
           </CardBody>
         </Card>
-      </div>
+      )}
 
-      <p className="mt-5 text-xs leading-5 text-slate-400">
+      <p className="mt-5 text-xs leading-5 text-muted">
         CSV downloads are generated by <code>GET /reports/export</code> and fetched with the session token. No CSV is
         assembled from decorative frontend data.
       </p>

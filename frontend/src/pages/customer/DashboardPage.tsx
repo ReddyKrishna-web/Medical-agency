@@ -2,14 +2,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowRight,
-  ClipboardCheck,
   FileText,
   MessageSquareText,
   Package,
   PackagePlus,
   RefreshCcw,
-  ShoppingBag,
-  Truck,
 } from 'lucide-react';
 import { api, apiMeta } from '@/lib/api';
 import { mapDashboard, mapOrders, mapRequirements } from '@/lib/adapters';
@@ -19,10 +16,9 @@ import { formatCurrency, formatDate, formatNumber } from '@/lib/utils';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Card, CardBody, CardHeader } from '@/components/ui/Card';
-import { StatCard } from '@/components/ui/StatCard';
 import { Badge } from '@/components/ui/Badge';
 import { DataTable, type Column } from '@/components/ui/DataTable';
-import { EmptyState, ErrorState } from '@/components/ui/States';
+import { EmptyState, ErrorState, Skeleton } from '@/components/ui/States';
 import type { Order } from '@/types/api';
 
 function greeting() {
@@ -66,7 +62,7 @@ export default function CustomerDashboard() {
       key: 'number',
       header: 'Order',
       render: (order) => (
-        <Link to={`/customer/orders/${order.id}`} className="font-bold text-brand-700">
+        <Link to={`/customer/orders/${order.id}`} className="font-medium text-brand-700">
           {order.orderNumber}
         </Link>
       ),
@@ -110,26 +106,39 @@ export default function CustomerDashboard() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="Orders in range"
-          value={m?.orders.total}
-          icon={ShoppingBag}
-          loading={metrics.isLoading}
-          hint="From the reporting window"
-        />
-        <StatCard label="Orders today" value={m?.metrics?.todayOrders} icon={ShoppingBag} tone="blue" loading={metrics.isLoading} hint="Created today" />
-        <StatCard label="Open orders" value={m?.orders.open} icon={ClipboardCheck} tone="amber" loading={metrics.isLoading} hint="Not delivered or cancelled" />
-        <StatCard label="Delivered" value={m?.orders.delivered} icon={Truck} tone="blue" loading={metrics.isLoading} hint="Completed in this window" />
-        <StatCard label="Delivered value" value={m?.orders.revenue} icon={Package} tone="green" loading={metrics.isLoading} hint="Server-calculated order value" />
-      </div>
+      <Card>
+        <dl className="grid grid-cols-2 divide-line sm:grid-cols-4 sm:divide-x">
+          {[
+            { label: 'Orders in range', value: m?.orders.total, hint: 'From the reporting window' },
+            { label: 'Open orders', value: m?.orders.open, hint: 'Not delivered or cancelled' },
+            { label: 'Delivered', value: m?.orders.delivered, hint: 'Completed in this window' },
+            { label: 'Delivered value', value: m?.orders.revenue, currency: true, hint: 'Server-calculated order value' },
+          ].map((item) => (
+            <div key={item.label} className="p-5">
+              <dt className="text-[11px] font-medium uppercase tracking-[.12em] text-muted">{item.label}</dt>
+              {metrics.isLoading ? (
+                <Skeleton className="mt-3 h-8 w-20" />
+              ) : (
+                <dd className="mt-2 text-[26px] font-semibold leading-none tracking-[-0.02em] text-charcoal">
+                  {item.value === undefined
+                    ? '—'
+                    : item.currency
+                      ? formatCurrency(item.value)
+                      : formatNumber(item.value)}
+                </dd>
+              )}
+              <p className="mt-2 text-xs text-muted">{item.hint}</p>
+            </div>
+          ))}
+        </dl>
+      </Card>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px] xl:items-start">
         <Card className="overflow-hidden">
           <CardHeader
             title="Recent orders"
             action={
-              <Link to="/customer/orders" className="inline-flex items-center gap-1 text-sm font-semibold text-brand-700">
+              <Link to="/customer/orders" className="inline-flex items-center gap-1 text-[13px] font-medium text-brand-700">
                 View all <ArrowRight className="h-4 w-4" />
               </Link>
             }
@@ -150,31 +159,31 @@ export default function CustomerDashboard() {
 
         <div className="space-y-6">
           <Card>
-            <CardHeader title="Quick actions" action={<Package className="h-4 w-4 text-slate-400" />} />
+            <CardHeader title="Quick actions" action={<Package className="h-4 w-4 text-navy-400" />} />
             <CardBody className="grid grid-cols-2 gap-2">
               {quickActions.map((action) => (
                 <Link
                   key={action.to}
                   to={action.to}
-                  className="flex min-h-20 flex-col justify-between rounded-xl border border-slate-200 p-3 text-sm font-semibold text-slate-700 hover:border-brand-200 hover:bg-brand-50"
+                  className="flex min-h-20 flex-col justify-between rounded-lg border border-line p-3 text-[13px] font-medium text-charcoal transition-colors hover:border-brand-300 hover:bg-ivory"
                 >
-                  <action.icon className="h-4 w-4 text-brand-600" /> {action.label}
+                  <action.icon className="h-4 w-4 text-brand-700" /> {action.label}
                 </Link>
               ))}
             </CardBody>
           </Card>
 
           <Card>
-            <CardHeader title="Recent requirements" action={<FileText className="h-4 w-4 text-slate-400" />} />
+            <CardHeader title="Recent requirements" action={<FileText className="h-4 w-4 text-navy-400" />} />
             <CardBody className="p-0">
               {(requirements.data ?? []).length ? (
-                <ul className="divide-y divide-slate-100">
+                <ul className="divide-y divide-line/70">
                   {(requirements.data ?? []).slice(0, 4).map((item) => (
                     <li key={item.id}>
-                      <Link to={`/customer/requirements/${item.id}`} className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50">
+                      <Link to={`/customer/requirements/${item.id}`} className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-ivory">
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold text-slate-700">{item.title}</p>
-                          <p className="mt-0.5 text-xs text-slate-400">{formatDate(item.createdAt)}</p>
+                          <p className="truncate text-sm font-medium text-charcoal">{item.title}</p>
+                          <p className="mt-0.5 text-xs text-muted">{formatDate(item.createdAt)}</p>
                         </div>
                         <Badge value={item.status} />
                       </Link>
@@ -206,7 +215,7 @@ export default function CustomerDashboard() {
         </div>
       )}
 
-      <p className="mt-6 text-xs leading-5 text-slate-400">
+      <p className="mt-6 text-xs leading-5 text-muted">
         {formatNumber(m?.orders.total)} orders worth {formatCurrency(m?.orders.revenue)} in the current reporting window.
         {m?.metrics?.unpaidAmount !== undefined
           ? ` Outstanding balance ${formatCurrency(m.metrics.unpaidAmount)}.`

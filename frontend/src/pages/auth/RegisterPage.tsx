@@ -385,15 +385,20 @@ export default function RegisterPage() {
       />
 
       <div className="mb-7">
-        <p className="text-xs font-bold uppercase tracking-[.18em] text-medical-700">Registration</p>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-ink">Create your account</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-600">
-          Three steps and you are in. No approval waiting period — accounts work immediately.
+        <p className="text-[11px] font-medium uppercase tracking-[.14em] text-brand-700">Registration</p>
+        <h1 className="mt-2 font-display text-[27px] font-semibold tracking-[-0.02em] text-charcoal">
+          Create your account
+        </h1>
+        <p className="mt-2 text-sm leading-6 text-muted">
+          Three steps and you are in. Shops and salesmen can start working straight away.
         </p>
       </div>
 
       {statusMessage && (
-        <div role="status" className="mb-5 flex items-start gap-3 rounded-xl border border-medical-200 bg-medical-50 p-4 text-sm text-medical-900">
+        <div
+          role="status"
+          className="mb-5 flex items-start gap-3 rounded-lg border border-medical-200 bg-medical-50 p-4 text-sm leading-6 text-medical-800"
+        >
           <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-medical-600" />
           {statusMessage}
         </div>
@@ -407,10 +412,10 @@ export default function RegisterPage() {
             <li key={title} className="flex flex-1 items-center gap-2">
               <span
                 className={cn(
-                  'grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-extrabold transition',
-                  state === 'done' && 'bg-medical-500 text-white',
-                  state === 'current' && 'bg-ink text-white ring-4 ring-ink/10',
-                  state === 'todo' && 'bg-slate-200 text-slate-500',
+                  'grid h-7 w-7 shrink-0 place-items-center rounded-md text-xs font-semibold transition-colors',
+                  state === 'done' && 'bg-brand-700 text-white',
+                  state === 'current' && 'bg-forest text-white ring-2 ring-brand-200',
+                  state === 'todo' && 'bg-parchment text-muted ring-1 ring-line',
                 )}
                 aria-current={state === 'current' ? 'step' : undefined}
               >
@@ -418,13 +423,13 @@ export default function RegisterPage() {
               </span>
               <span
                 className={cn(
-                  'hidden text-xs font-bold sm:block',
-                  state === 'todo' ? 'text-slate-400' : 'text-ink',
+                  'hidden text-xs font-medium sm:block',
+                  state === 'todo' ? 'text-muted' : 'text-charcoal',
                 )}
               >
                 {title}
               </span>
-              {index < STEP_TITLES.length - 1 && <span className="h-px flex-1 bg-slate-200" />}
+              {index < STEP_TITLES.length - 1 && <span className="h-px flex-1 bg-line" />}
             </li>
           );
         })}
@@ -432,8 +437,8 @@ export default function RegisterPage() {
 
       <form onSubmit={handleSubmit(submit)} noValidate className="space-y-6">
         {/* ------------------------------------------------------ step 1 */}
-        <section className={cn('rounded-3xl border border-slate-200 bg-white p-6 shadow-panel sm:p-7', step !== 0 && 'hidden')}>
-          <h2 className="text-sm font-extrabold uppercase tracking-wider text-slate-500">What describes you best?</h2>
+        <section className={cn('rounded-xl border border-line bg-white p-6 shadow-soft transition-shadow sm:p-7', step === 0 && 'border-brand-300', step !== 0 && 'hidden')}>
+          <h2 className="text-[11px] font-medium uppercase tracking-[.14em] text-muted">What describes you best?</h2>
           <div className="mt-4 space-y-3" role="radiogroup" aria-label="Account type">
             {ACCOUNT_OPTIONS.map((option) => {
               const active = accountType === option.value;
@@ -445,33 +450,33 @@ export default function RegisterPage() {
                   aria-checked={active}
                   onClick={() => setValue('accountType', option.value, { shouldValidate: true })}
                   className={cn(
-                    'flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition',
+                    'flex w-full items-start gap-4 rounded-lg border p-4 text-left transition-colors',
                     active
-                      ? 'border-medical-500 bg-medical-50/60 ring-2 ring-medical-100'
-                      : 'border-slate-200 bg-white hover:border-brand-200 hover:bg-slate-50',
+                      ? 'border-brand-300 bg-sage/50 ring-1 ring-brand-200'
+                      : 'border-line bg-white hover:border-brand-300 hover:bg-ivory',
                   )}
                 >
                   <span
                     className={cn(
-                      'grid h-11 w-11 shrink-0 place-items-center rounded-xl transition',
-                      active ? 'bg-medical-500 text-white' : 'bg-slate-100 text-slate-500',
+                      'grid h-10 w-10 shrink-0 place-items-center rounded-md transition-colors',
+                      active ? 'bg-forest text-white' : 'bg-parchment text-muted',
                     )}
                   >
-                    <option.icon className="h-5 w-5" />
+                    <option.icon className="h-[18px] w-[18px]" />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-extrabold text-ink">{option.title}</span>
+                      <span className="text-sm font-semibold text-charcoal">{option.title}</span>
                       {active && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-medical-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-medical-700">
+                        <span className="inline-flex items-center gap-1 rounded-md border border-brand-200 bg-white px-2 py-0.5 text-[10px] font-medium uppercase tracking-[.08em] text-brand-800">
                           <Check className="h-3 w-3" /> Selected
                         </span>
                       )}
                     </span>
-                    <span className="mt-0.5 block text-xs leading-5 text-slate-500">{option.text}</span>
+                    <span className="mt-0.5 block text-xs leading-5 text-muted">{option.text}</span>
                     <span className="mt-2 flex flex-wrap gap-1.5">
                       {option.points.map((point) => (
-                        <span key={point} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">
+                        <span key={point} className="rounded-md bg-parchment px-2 py-0.5 text-[10px] font-medium text-navy-700">
                           {point}
                         </span>
                       ))}
@@ -489,7 +494,7 @@ export default function RegisterPage() {
         </section>
 
         {/* ------------------------------------------------------ step 2 */}
-        <section className={cn('rounded-3xl border border-slate-200 bg-white p-6 shadow-panel sm:p-7', step !== 1 && 'hidden')}>
+        <section className={cn('rounded-xl border border-line bg-white p-6 shadow-soft sm:p-7', step !== 1 && 'hidden')}>
           {!isAgency && (
             <Field
               id="agencyId"
@@ -566,14 +571,14 @@ export default function RegisterPage() {
           )}
 
           {showAddress && (
-            <div className="mt-6 border-t border-slate-100 pt-6">
+            <div className="mt-6 border-t border-line pt-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h3 className="text-sm font-extrabold text-ink">{isAgency ? 'Agency address' : 'Registered address'}</h3>
+                <h3 className="text-[13px] font-semibold text-charcoal">{isAgency ? 'Agency address' : 'Registered address'}</h3>
                 <button
                   type="button"
                   onClick={() => void fillFromDeviceLocation()}
                   disabled={locate === 'locating'}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-bold text-brand-700 transition hover:border-brand-300 hover:bg-brand-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-line bg-white px-3 py-1.5 text-xs font-medium text-brand-700 transition-colors hover:border-brand-300 hover:bg-ivory disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {locate === 'locating' ? (
                     <>
@@ -590,8 +595,8 @@ export default function RegisterPage() {
                 <p
                   role="status"
                   className={cn(
-                    'mt-3 rounded-xl px-3 py-2 text-xs leading-5',
-                    locate === 'done' && 'bg-medical-50 text-medical-800',
+                    'mt-3 rounded-md px-3 py-2 text-xs leading-5',
+                    locate === 'done' && 'bg-medical-50 text-brand-800',
                     locate === 'error' && 'bg-red-50 text-red-700',
                   )}
                 >
@@ -708,8 +713,8 @@ export default function RegisterPage() {
                   />
                 </Field>
               </div>
-              <div className="flex items-start gap-3 rounded-xl bg-slate-50 p-4 text-xs leading-5 text-slate-600">
-                <ClipboardList className="mt-0.5 h-4 w-4 shrink-0 text-medical-700" />
+              <div className="flex items-start gap-3 rounded-lg bg-ivory p-4 text-xs leading-5 text-muted">
+                <ClipboardList className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
                 <p>
                   Medical shops are assigned to you by the agency from the admin workspace. You can start as soon as
                   your first shop is assigned.
@@ -729,19 +734,19 @@ export default function RegisterPage() {
         </section>
 
         {/* ------------------------------------------------------ step 3 */}
-        <section className={cn('rounded-3xl border border-slate-200 bg-white p-6 shadow-panel sm:p-7', step !== 2 && 'hidden')}>
+        <section className={cn('rounded-xl border border-line bg-white p-6 shadow-soft sm:p-7', step !== 2 && 'hidden')}>
           <div className="mb-5 flex items-center gap-3">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-50 text-brand-700">
-              <Lock className="h-5 w-5" />
+            <span className="grid h-10 w-10 place-items-center rounded-md bg-sage text-brand-700">
+              <Lock className="h-[18px] w-[18px]" />
             </span>
             <div>
-              <h2 className="text-sm font-extrabold text-ink">Sign-in credentials</h2>
-              <p className="text-xs text-slate-500">Minimum {PASSWORD_MIN_LENGTH} characters, mixing letters and numbers.</p>
+              <h2 className="text-[13px] font-semibold text-charcoal">Sign-in credentials</h2>
+              <p className="text-xs text-muted">Minimum {PASSWORD_MIN_LENGTH} characters, mixing letters and numbers.</p>
             </div>
           </div>
 
           {isAgency ? (
-            <p className="rounded-xl bg-slate-50 p-4 text-xs leading-5 text-slate-600">
+            <p className="rounded-lg bg-ivory p-4 text-xs leading-5 text-muted">
               Signing up as <strong>{watch('agencyName') || 'your agency'}</strong>. The contact name you entered is
               used as the administrator profile.
             </p>
@@ -787,7 +792,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div className="mt-6 space-y-2 border-t border-slate-100 pt-6">
+          <div className="mt-6 space-y-2 border-t border-line pt-6">
             <Checkbox
               label="I accept the terms of service"
               description="The privacy notice and terms are review placeholders until configured for launch."
@@ -811,9 +816,9 @@ export default function RegisterPage() {
       </form>
 
       {/* Summary rail */}
-      <div className="mt-5 rounded-2xl border border-medical-200 bg-medical-50/60 p-4 text-xs leading-5 text-medical-900">
-        <p className="font-extrabold">What happens next?</p>
-        <p className="mt-1 text-slate-700">
+      <div className="mt-5 rounded-lg border border-line bg-white p-4 text-xs leading-5 text-muted">
+        <p className="font-semibold text-charcoal">What happens next?</p>
+        <p className="mt-1">
           {isAgency
             ? 'Your agency workspace is created immediately with you as its administrator — you land straight on the admin dashboard.'
             : isSalesman
@@ -822,9 +827,9 @@ export default function RegisterPage() {
         </p>
       </div>
 
-      <p className="mt-6 border-t border-slate-200 pt-6 text-center text-sm text-slate-600">
+      <p className="mt-6 border-t border-line pt-6 text-center text-sm text-muted">
         Already registered?{' '}
-        <Link to="/login" className="font-bold text-brand-700 transition hover:text-brand-900">
+        <Link to="/login" className="font-medium text-brand-700 transition-colors hover:text-brand-800">
           Sign in
         </Link>
       </p>

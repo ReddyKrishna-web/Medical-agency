@@ -118,8 +118,8 @@ export default function CategoriesPage() {
             <Boxes className="h-4 w-4" />
           </span>
           <div>
-            <p className="font-bold text-slate-800">{item.name}</p>
-            <p className="text-xs text-slate-400">/{item.slug}</p>
+            <p className="text-[13.5px] font-medium text-charcoal">{item.name}</p>
+            <p className="text-xs text-muted">/{item.slug}</p>
           </div>
         </div>
       ),
@@ -144,7 +144,7 @@ export default function CategoriesPage() {
             <Edit3 className="h-4 w-4" /> Edit
           </button>
           <button
-            className="inline-flex items-center gap-1.5 font-semibold text-slate-500"
+            className="inline-flex items-center gap-1.5 text-[13px] font-medium text-navy-700"
             onClick={(event) => {
               event.stopPropagation();
               setToggling(item);
@@ -179,7 +179,7 @@ export default function CategoriesPage() {
 
       <Card className="mb-5 p-4">
         <div className="relative">
-          <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-muted" />
           <TextInput
             aria-label="Search categories"
             value={search}

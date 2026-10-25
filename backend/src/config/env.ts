@@ -25,6 +25,18 @@ const envSchema = z
     CORS_EXTRA_ORIGINS: z.string().optional().default(''),
     TRUST_PROXY: z.coerce.number().int().min(0).max(10).default(0),
 
+    // Supabase migration (phase 1: auth domain). All values are optional until
+    // the cutover is applied, but they must be supplied together when present.
+    // Never expose SUPABASE_SERVICE_ROLE_KEY or DATABASE_URL to the frontend.
+    SUPABASE_URL: optionalString,
+    SUPABASE_ANON_KEY: optionalString,
+    SUPABASE_SERVICE_ROLE_KEY: optionalString,
+    // Only for projects that still sign access tokens with the legacy HS256
+    // secret; modern projects publish asymmetric keys at /auth/v1/.well-known/jwks.json.
+    SUPABASE_JWT_SECRET: optionalString,
+    DATABASE_URL: optionalString,
+    DIRECT_URL: optionalString,
+
     MONGODB_URI: z.string().min(1).default('mongodb://127.0.0.1:27017/supply-medicals'),
     ALLOW_TRANSACTIONS: booleanish.default('true'),
     MONGODB_SERVER_SELECTION_TIMEOUT_MS: z.coerce.number().int().min(1000).default(10000),
@@ -76,6 +88,28 @@ const envSchema = z
     SEED_PENDING_CUSTOMER_PASSWORD: optionalString
   })
   .superRefine((value, ctx) => {
+    const supabase = [
+      ['SUPABASE_URL', value.SUPABASE_URL],
+      ['SUPABASE_ANON_KEY', value.SUPABASE_ANON_KEY],
+      ['SUPABASE_SERVICE_ROLE_KEY', value.SUPABASE_SERVICE_ROLE_KEY],
+      ['DATABASE_URL', value.DATABASE_URL],
+    ] as const;
+    const supplied = supabase.filter(([, current]) => Boolean(current));
+    if (supplied.length > 0 && supplied.length < supabase.length) {
+      const missing = supabase.filter(([, current]) => !current).map(([key]) => key);
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['SUPABASE_URL'],
+        message: `Supabase is partially configured; also set: ${missing.join(', ')}`
+      });
+    }
+    if (value.SUPABASE_URL && !/^https?:\/\//i.test(value.SUPABASE_URL)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['SUPABASE_URL'],
+        message: 'SUPABASE_URL must start with http:// or https://'
+      });
+    }
     if (value.JWT_SECRET === value.JWT_REFRESH_SECRET) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -152,6 +186,8 @@ export const env = {
   isDevelopment: raw.NODE_ENV === 'development',
   isTest: raw.NODE_ENV === 'test',
   corsOrigins: clientOrigins,
+  supabaseAuthConfigured: Boolean(raw.SUPABASE_URL && raw.SUPABASE_ANON_KEY && raw.SUPABASE_SERVICE_ROLE_KEY),
+  postgresConfigured: Boolean(raw.DATABASE_URL),
   maxFileSizeBytes: Math.floor(raw.MAX_FILE_SIZE_MB * 1024 * 1024),
   storagePath: path.isAbsolute(raw.LOCAL_STORAGE_PATH)
     ? raw.LOCAL_STORAGE_PATH

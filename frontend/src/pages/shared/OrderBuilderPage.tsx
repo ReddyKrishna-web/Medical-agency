@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Check, ImageOff, Minus, PackageCheck, Plus, Search, ShieldCheck, ShoppingCart, Trash2, Building2 } from 'lucide-react';
+import { Check, Minus, PackageCheck, Plus, Search, ShieldCheck, ShoppingCart, Trash2, Building2 } from 'lucide-react';
 import { apiMeta, apiSend } from '@/lib/api';
 import { mapCategories, mapCustomers, mapOrder, mapProducts, productAvailability, productStock } from '@/lib/adapters';
 import { buildOrderPayload, buildStockValidationPayload } from '@/lib/payloads';
@@ -221,47 +221,45 @@ export default function OrderBuilderPage() {
                     <article
                       key={product.id}
                       className={cn(
-                        'overflow-hidden rounded-2xl border bg-white shadow-soft transition',
-                        selected ? 'border-medical-400 ring-2 ring-medical-100' : 'border-slate-200',
+                        'overflow-hidden rounded-lg border bg-white transition-colors',
+                        selected ? 'border-brand-400 ring-1 ring-brand-200' : 'border-line',
                       )}
                     >
-                      <div className="flex h-32 items-center justify-center bg-slate-50">
-                        {product.imageUrl ? (
+                      {product.imageUrl && (
+                        <div className="flex h-28 items-center justify-center border-b border-line/70 bg-ivory">
                           <img
                             src={product.imageUrl}
                             alt=""
                             className="h-full w-full object-contain p-3"
                             loading="lazy"
                             onError={(event) => {
-                              event.currentTarget.style.display = 'none';
+                              event.currentTarget.parentElement?.style.setProperty('display', 'none');
                             }}
                           />
-                        ) : (
-                          <ImageOff className="h-8 w-8 text-slate-300" />
-                        )}
-                      </div>
+                        </div>
+                      )}
                       <div className="p-4">
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <h3 className="truncate font-bold text-ink">{product.name}</h3>
-                            <p className="mt-0.5 truncate text-xs text-slate-400">
+                            <h3 className="truncate text-[13.5px] font-medium text-charcoal">{product.name}</h3>
+                            <p className="mt-0.5 truncate text-xs text-muted">
                               {[product.genericName, product.brand, product.manufacturer].filter(Boolean).join(' / ') ||
                                 product.sku}
                             </p>
                           </div>
                           {!product.isActive && <Badge value="DISABLED" />}
                         </div>
-                        <p className="mt-2 line-clamp-2 min-h-9 text-xs leading-5 text-slate-500">
+                        <p className="mt-2 line-clamp-2 min-h-9 text-xs leading-5 text-muted">
                           {product.description || 'No product description provided.'}
                         </p>
-                        <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+                        <div className="mt-3 flex items-center gap-2 text-xs text-muted">
                           {state && <Badge value={state} />}
                           {stock !== undefined && <span>Available {formatNumber(stock)}</span>}
                         </div>
                         <div className="mt-4 flex items-end justify-between gap-3">
                           <div>
-                            <p className="text-[10px] uppercase tracking-wider text-slate-400">Catalog price</p>
-                            <p className="font-extrabold text-slate-800">{formatCurrency(product.price)}</p>
+                            <p className="text-[10px] uppercase tracking-[.1em] text-muted">Catalog price</p>
+                            <p className="mt-0.5 text-[13px] font-medium text-charcoal">{formatCurrency(product.price)}</p>
                           </div>
                           <Button size="sm" variant={selected ? 'success' : 'primary'} onClick={() => addProduct(product.id)}>
                             {selected ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -273,7 +271,7 @@ export default function OrderBuilderPage() {
                   );
                 })}
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-white">
+              <div className="rounded-lg border border-line bg-white">
                 <Pagination page={page} limit={12} total={productTotal} onPageChange={setPage} />
               </div>
             </>
@@ -289,7 +287,7 @@ export default function OrderBuilderPage() {
             title="Order basket"
             description={`${fields.length} product${fields.length === 1 ? '' : 's'} selected`}
             action={
-              <span className="rounded-full bg-brand-50 p-2 text-brand-700">
+              <span className="rounded-md bg-sage p-2 text-brand-700">
                 <ShoppingCart className="h-4 w-4" />
               </span>
             }
@@ -301,15 +299,15 @@ export default function OrderBuilderPage() {
                 account's agency. Shops are bound to their agency at approval;
                 salesmen order on behalf of a shop inside the same agency.
               */}
-              <div className="rounded-xl border border-medical-200 bg-medical-50/70 p-4">
+              <div className="rounded-lg border border-medical-200 bg-medical-50/60 p-4">
                 <div className="flex items-start gap-3">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-medical-700 ring-1 ring-medical-200">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-white text-brand-700 ring-1 ring-medical-200">
                     <Building2 className="h-5 w-5" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-medical-700">Ordering from</p>
-                    <p className="truncate text-sm font-extrabold text-ink">{user?.agency?.name ?? 'Your agency'}</p>
-                    <p className="mt-1 text-xs leading-5 text-slate-600">
+                    <p className="text-[10px] font-medium uppercase tracking-[.14em] text-brand-700">Ordering from</p>
+                    <p className="truncate text-sm font-semibold text-charcoal">{user?.agency?.name ?? 'Your agency'}</p>
+                    <p className="mt-1 text-xs leading-5 text-muted">
                       {role === 'customer'
                         ? 'After selecting your medicals here, the whole basket is placed with this agency.'
                         : 'The basket is placed with this agency on behalf of the selected medical shop.'}
@@ -345,32 +343,32 @@ export default function OrderBuilderPage() {
                   {fields.map((field, index) => {
                     const product = productById.get(String(field.productId));
                     return (
-                      <div key={field.id} className="rounded-xl border border-slate-200 p-3">
+                      <div key={field.id} className="rounded-lg border border-line p-3">
                         <div className="flex items-start gap-3">
-                          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700">
+                          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-sage text-brand-700">
                             <PackageCheck className="h-5 w-5" />
                           </span>
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-bold text-slate-800">
+                            <p className="truncate text-sm font-medium text-charcoal">
                               {product?.name ?? `Product ${String(field.productId).slice(-8)}`}
                             </p>
-                            <p className="mt-0.5 text-xs text-slate-400">{product?.sku ?? 'SKU unavailable'}</p>
+                            <p className="mt-0.5 text-xs text-muted">{product?.sku ?? 'SKU unavailable'}</p>
                           </div>
                           <button
                             type="button"
                             onClick={() => remove(index)}
-                            className="rounded-lg p-2 text-red-500 hover:bg-red-50"
+                            className="rounded-md p-2 text-red-600 transition-colors hover:bg-red-50"
                             aria-label="Remove product"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                         <div className="mt-3 flex items-center justify-between">
-                          <p className="text-xs text-slate-500">Quantity</p>
-                          <div className="flex items-center rounded-lg border border-slate-300">
+                          <p className="text-xs text-muted">Quantity</p>
+                          <div className="flex items-center rounded-lg border border-line">
                             <button
                               type="button"
-                              className="p-2 hover:bg-slate-50"
+                              className="p-2 text-navy-600 transition-colors hover:bg-ivory hover:text-charcoal"
                               onClick={() => step(index, -1)}
                               aria-label="Decrease quantity"
                             >
@@ -381,13 +379,13 @@ export default function OrderBuilderPage() {
                               min="1"
                               step="1"
                               aria-label={`Quantity for ${product?.name ?? 'product'}`}
-                              className="w-14 border-x border-slate-200 py-1.5 text-center text-sm font-semibold outline-none"
+                              className="w-14 border-x border-line bg-white py-1.5 text-center text-sm font-semibold outline-none"
                               value={Number(field.quantity) || 1}
                               onChange={(event) => update(index, { productId: String(field.productId), quantity: Math.max(1, Number(event.target.value) || 1) })}
                             />
                             <button
                               type="button"
-                              className="p-2 hover:bg-slate-50"
+                              className="p-2 text-navy-600 transition-colors hover:bg-ivory hover:text-charcoal"
                               onClick={() => step(index, 1)}
                               aria-label="Increase quantity"
                             >
@@ -433,7 +431,7 @@ export default function OrderBuilderPage() {
 
               <div className="flex gap-3 rounded-xl bg-slate-50 p-4">
                 <ShieldCheck className="h-5 w-5 shrink-0 text-medical-700" />
-                <p className="text-xs leading-5 text-slate-600">
+                <p className="text-xs leading-5 text-muted">
                   No client price or tax is submitted. The service validates your account and resolves all commercial
                   values when the order is created.
                 </p>

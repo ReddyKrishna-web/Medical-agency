@@ -83,7 +83,7 @@ export default function SalesmanDashboard() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Assigned customers" value={m?.catalog.visibleCustomers} icon={Users} loading={metrics.isLoading} hint="Accounts in your portfolio" />
         <StatCard label="Orders in range" value={m?.orders.total} icon={ShoppingBag} tone="blue" loading={metrics.isLoading} hint="Reporting window" />
         <StatCard label="Orders today" value={m?.metrics?.todayOrders} icon={Activity} tone="blue" loading={metrics.isLoading} hint="Created today" />
@@ -92,7 +92,7 @@ export default function SalesmanDashboard() {
         <StatCard label="Delivered" value={m?.orders.delivered} icon={CheckCircle2} tone="green" loading={metrics.isLoading} hint="Completed in range" />
         <StatCard
           label="Delivered revenue"
-          value={m?.orders.revenue}
+          value={m?.orders.revenue === undefined ? undefined : formatCurrency(m.orders.revenue)}
           icon={IndianRupee}
           tone="purple"
           loading={metrics.isLoading}
@@ -118,11 +118,11 @@ export default function SalesmanDashboard() {
               <div className="h-64" aria-label="Salesman order activity chart">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chart} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-                    <YAxis tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} allowDecimals={false} />
-                    <Tooltip contentStyle={{ borderRadius: 12, borderColor: '#e2e8f0' }} />
-                    <Bar dataKey="count" fill="#22ad78" radius={[6, 6, 0, 0]} maxBarSize={36} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E5DE" vertical={false} />
+                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#5F665F' }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+                    <YAxis tick={{ fontSize: 11, fill: '#5F665F' }} axisLine={false} tickLine={false} allowDecimals={false} />
+                    <Tooltip contentStyle={{ borderRadius: 8, borderColor: '#E5E5DE', fontSize: 12 }} />
+                    <Bar dataKey="count" fill="#35584B" radius={[4, 4, 0, 0]} maxBarSize={36} isAnimationActive={false} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -147,17 +147,17 @@ export default function SalesmanDashboard() {
             ) : followRows.length === 0 ? (
               <EmptyState title="No follow-ups due" description="Schedule the next action from a customer profile." className="py-10" />
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-line/70">
                 {followRows.map((item) => (
                   <li key={item.id} className="px-5 py-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-bold text-slate-800">
+                        <p className="truncate text-[13.5px] font-medium text-charcoal">
                           {item.customerId && typeof item.customerId === 'object'
                             ? item.customerId.businessName
                             : 'Customer'}
                         </p>
-                        <p className="mt-1 line-clamp-2 text-xs text-slate-500">{item.title}</p>
+                        <p className="mt-1 line-clamp-2 text-xs text-muted">{item.title}</p>
                       </div>
                       <Badge value={item.type} tone="slate" />
                     </div>
@@ -188,18 +188,18 @@ export default function SalesmanDashboard() {
             ) : orderRows.length === 0 ? (
               <EmptyState title="No orders yet" description="Create an order for an assigned customer to get started." className="py-10" />
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-line/70">
                 {orderRows.map((order) => (
                   <li key={order.id} className="flex items-center gap-4 px-5 py-4">
                     <div className="min-w-0 flex-1">
-                      <Link to={`/salesman/orders/${order.id}`} className="font-bold text-brand-700">
+                      <Link to={`/salesman/orders/${order.id}`} className="text-[13px] font-medium text-brand-700">
                         {order.orderNumber}
                       </Link>
-                      <p className="mt-0.5 truncate text-xs text-slate-400">
+                      <p className="mt-0.5 truncate text-xs text-muted">
                         {order.customerName} - {formatDate(order.createdAt)}
                       </p>
                     </div>
-                    <span className="text-sm font-bold text-slate-700">{formatCurrency(order.grandTotal, order.currency)}</span>
+                    <span className="text-[13px] font-medium text-charcoal">{formatCurrency(order.grandTotal, order.currency)}</span>
                     <Badge value={order.status} />
                   </li>
                 ))}
@@ -230,20 +230,20 @@ export default function SalesmanDashboard() {
                 className="py-10"
               />
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-line/70">
                 {customerRows.map((customer) => (
                   <li key={customer.id} className="flex items-center gap-3 px-5 py-4">
-                    <span className="grid h-9 w-9 place-items-center rounded-lg bg-brand-50 text-brand-700">
+                    <span className="grid h-9 w-9 place-items-center rounded-lg bg-navy-50 text-brand-700">
                       <ContactRound className="h-4 w-4" />
                     </span>
                     <div className="min-w-0 flex-1">
                       <Link
                         to={`/salesman/customers/${customer.id}`}
-                        className="truncate text-sm font-bold text-slate-800 hover:text-brand-700"
+                        className="truncate text-[13.5px] font-medium text-charcoal hover:text-brand-700"
                       >
                         {customer.businessName}
                       </Link>
-                      <p className="mt-0.5 truncate text-xs text-slate-400">
+                      <p className="mt-0.5 truncate text-xs text-muted">
                         {customer.phone || humanize(customer.status)}
                       </p>
                     </div>
@@ -258,7 +258,7 @@ export default function SalesmanDashboard() {
         </Card>
       </div>
 
-      <p className="mt-6 text-xs text-slate-400">
+      <p className="mt-6 text-xs text-muted">
         {formatNumber(m?.orders.total)} orders and {formatNumber(m?.metrics?.followUpsDue ?? m?.followUps.pending)} pending
         follow-ups in the current reporting window.
       </p>

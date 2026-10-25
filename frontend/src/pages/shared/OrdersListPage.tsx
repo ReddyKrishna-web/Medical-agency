@@ -53,8 +53,8 @@ export default function OrdersListPage() {
       header: 'Order',
       render: (order) => (
         <div>
-          <p className="font-bold text-slate-800">{order.orderNumber}</p>
-          <p className="mt-0.5 text-xs text-slate-400">{formatDate(order.createdAt, 'dd MMM yyyy, HH:mm')}</p>
+          <p className="text-[13.5px] font-medium text-charcoal">{order.orderNumber}</p>
+          <p className="mt-0.5 text-xs text-muted">{formatDate(order.createdAt, 'dd MMM yyyy, HH:mm')}</p>
         </div>
       ),
     },
@@ -70,7 +70,7 @@ export default function OrdersListPage() {
       key: 'total',
       header: 'Grand total',
       render: (order) => (
-        <span className="font-semibold text-slate-800">{formatCurrency(order.grandTotal, order.currency)}</span>
+        <span className="text-[13px] font-medium tabular-nums text-charcoal">{formatCurrency(order.grandTotal, order.currency)}</span>
       ),
       mobileLabel: false,
     },
@@ -106,7 +106,7 @@ export default function OrdersListPage() {
       />
 
       {customerId && (
-        <div className="mb-4 flex items-center justify-between rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-900">
+        <div className="mb-4 flex items-center justify-between rounded-lg border border-brand-200 bg-sage/50 px-4 py-3 text-[13px] text-brand-900">
           <span>Showing orders for one customer account.</span>
           <Link to={`/${role}/orders`} className="font-semibold">
             Clear filter
@@ -114,7 +114,7 @@ export default function OrdersListPage() {
         </div>
       )}
 
-      <div className="mb-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft sm:grid-cols-[1fr_220px]">
+      <div className="mb-4 grid gap-3 rounded-lg border border-line bg-white p-4 sm:grid-cols-[1fr_220px]">
         <TextInput
           aria-label="Search orders"
           value={search}
@@ -141,7 +141,7 @@ export default function OrdersListPage() {
         </SelectInput>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft">
+      <div className="overflow-hidden rounded-lg border border-line bg-white">
         <DataTable
           columns={columns}
           rows={rows}
@@ -169,7 +169,7 @@ export default function OrdersListPage() {
         />
       </div>
 
-      <p className="mt-3 text-xs text-slate-400">{formatNumber(total)} matching orders returned by the service.</p>
+      <p className="mt-3 text-xs text-muted">{formatNumber(total)} matching orders returned by the service.</p>
     </>
   );
 }

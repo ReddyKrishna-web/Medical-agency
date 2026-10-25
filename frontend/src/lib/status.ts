@@ -13,9 +13,9 @@ import type {
 export type BadgeTone = 'blue' | 'green' | 'amber' | 'red' | 'slate' | 'purple';
 
 const toneMap: Record<string, BadgeTone> = {
-  // orders
+  // orders — in-review and in-progress states read as informational (blue)
   PENDING: 'amber',
-  UNDER_REVIEW: 'purple',
+  UNDER_REVIEW: 'blue',
   CONFIRMED: 'blue',
   PROCESSING: 'blue',
   PACKED: 'purple',
@@ -30,13 +30,13 @@ const toneMap: Record<string, BadgeTone> = {
   INACTIVE: 'slate',
   SUSPENDED: 'amber',
   // finance
-  ISSUED: 'amber',
+  ISSUED: 'blue',
   PARTIALLY_PAID: 'amber',
   PAID: 'green',
   VOID: 'slate',
   // requirements
   SUBMITTED: 'blue',
-  IN_REVIEW: 'amber',
+  IN_REVIEW: 'blue',
   ACCEPTED: 'green',
   CONVERTED: 'purple',
   // follow-ups

@@ -44,8 +44,8 @@ export default function InvoicesListPage() {
       header: 'Invoice',
       render: (invoice) => (
         <div>
-          <p className="font-bold text-slate-800">{invoice.invoiceNumber}</p>
-          <p className="mt-0.5 text-xs text-slate-400">Order {invoice.orderNumber}</p>
+          <p className="text-[13.5px] font-medium text-charcoal">{invoice.invoiceNumber}</p>
+          <p className="mt-0.5 text-xs text-muted">Order {invoice.orderNumber}</p>
         </div>
       ),
     },
@@ -57,7 +57,7 @@ export default function InvoicesListPage() {
       key: 'total',
       header: 'Grand total',
       render: (invoice) => (
-        <span className="font-bold text-slate-800">{formatCurrency(invoice.grandTotal, invoice.currency)}</span>
+        <span className="text-[13.5px] font-medium text-charcoal">{formatCurrency(invoice.grandTotal, invoice.currency)}</span>
       ),
       mobileLabel: false,
     },
@@ -65,7 +65,7 @@ export default function InvoicesListPage() {
       key: 'dueAmount',
       header: 'Amount due',
       render: (invoice) => (
-        <span className={invoice.amountDue > 0 ? 'font-semibold text-amber-700' : 'text-slate-400'}>
+        <span className={invoice.amountDue > 0 ? 'font-medium text-amber-700' : 'text-muted'}>
           {formatCurrency(invoice.amountDue, invoice.currency)}
         </span>
       ),
@@ -81,7 +81,7 @@ export default function InvoicesListPage() {
           </Link>
           <Link
             to={`/${role}/invoices/${invoice.id}?print=1`}
-            className="text-slate-500 hover:text-slate-800"
+            className="text-muted transition-colors hover:text-charcoal"
             aria-label={`Print ${invoice.invoiceNumber}`}
           >
             <Printer className="h-4 w-4" />
@@ -100,7 +100,7 @@ export default function InvoicesListPage() {
         description="Account-scoped invoice records generated when the service completes a delivery."
       />
 
-      <div className="mb-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft sm:grid-cols-[1fr_220px]">
+      <div className="mb-4 grid gap-3 rounded-lg border border-line bg-white p-4 sm:grid-cols-[1fr_220px]">
         <TextInput
           aria-label="Search invoices"
           value={search}
@@ -127,7 +127,7 @@ export default function InvoicesListPage() {
         </SelectInput>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft">
+      <div className="overflow-hidden rounded-lg border border-line bg-white">
         <DataTable
           columns={columns}
           rows={rows}

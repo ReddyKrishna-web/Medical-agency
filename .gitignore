@@ -6,6 +6,8 @@ coverage/
 .env.*
 !.env.example
 *.log
+venv/
+*.bak
 .DS_Store
 Thumbs.db
 .vscode/
@@ -13,3 +15,5 @@ Thumbs.db
 uploads/
 storage/
 *.pem
+.pgdata/
+tmp/

@@ -1,84 +1,113 @@
-import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle2, ClipboardCheck, FileSearch, MessageSquareText, PackageCheck, Route, ScanSearch, ShieldCheck, Truck, Users } from 'lucide-react';
 import { SEO } from '@/components/ui/SEO';
+import { CtaBand, PageHero, PageSection, SectionLabel } from '@/components/landing/Editorial';
 
 const steps = [
-  { icon: ScanSearch, title: 'Search', text: 'The customer or assigned salesman finds an active product and checks authorized availability.' },
-  { icon: FileSearch, title: 'Order', text: 'Quantities are entered as separate lines. The browser never sets authoritative price or tax.' },
-  { icon: ShieldCheck, title: 'Confirm', text: 'Agency staff review the customer, products and stock before confirming fulfilment.' },
-  { icon: PackageCheck, title: 'Process', text: 'Valid non-expired batches are allocated by earliest expiry and stock movements are recorded.' },
-  { icon: Truck, title: 'Dispatch', text: 'Packing and dispatch are recorded against the same order with timestamped status history.' },
-  { icon: Route, title: 'Track', text: 'The customer sees the verified status update in the workspace and through the real-time channel.' },
-  { icon: ClipboardCheck, title: 'Reorder', text: 'A delivered order can be copied into a new draft. The original order and invoice are never modified.' },
+  { title: 'Search', text: 'The customer or assigned salesman finds an active product and checks authorised availability.' },
+  { title: 'Order', text: 'Quantities are entered as separate lines. The browser never sets authoritative price or tax.' },
+  { title: 'Confirm', text: 'Agency staff review the customer, products and stock before confirming fulfilment.' },
+  { title: 'Process', text: 'Valid non-expired batches are allocated by earliest expiry and stock movements are recorded.' },
+  { title: 'Dispatch', text: 'Packing and dispatch are recorded against the same order with timestamped status history.' },
+  { title: 'Track', text: 'The customer sees the verified status update in the workspace and through the real-time channel.' },
+  { title: 'Reorder', text: 'A delivered order can be copied into a new draft. The original order and invoice are never modified.' },
 ];
 
 const actors = [
-  { icon: Users, title: 'Medical shop', points: ['Search and order', 'Upload requirements', 'Track status', 'View invoices'] },
-  { icon: MessageSquareText, title: 'Assigned salesman', points: ['Manage assigned shops', 'Record follow-ups', 'Create orders', 'Message customers'] },
-  { icon: PackageCheck, title: 'Agency team', points: ['Approve accounts', 'Manage catalog and batches', 'Process orders', 'Review real reports'] },
+  {
+    label: 'Medical shop',
+    points: ['Search and order', 'Upload requirements', 'Track status', 'View invoices'],
+  },
+  {
+    label: 'Assigned salesman',
+    points: ['Manage assigned shops', 'Record follow-ups', 'Create orders', 'Message customers'],
+  },
+  {
+    label: 'Agency team',
+    points: ['Manage account status', 'Manage catalogue and batches', 'Process orders', 'Review real reports'],
+  },
 ];
 
 export default function HowItWorksPage() {
   return (
     <>
-      <SEO title="How Supply Medicals Works" description="See how customers, salesmen and a medical agency move from product search to order confirmation, dispatch, tracking and reorder." />
-      <section className="bg-ink py-20 text-white sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-bold uppercase tracking-[.18em] text-medical-300">How it works</p>
-          <h1 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-tight sm:text-5xl">Search → Order → Confirm → Process → Dispatch → Track → Reorder</h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">Every step updates the same authorized order record. Customers see progress; the agency retains operational control; stock movements remain auditable.</p>
-        </div>
-      </section>
+      <SEO
+        title="How Supply Medicals Works"
+        description="See how customers, salesmen and a medical agency move from product search to order confirmation, dispatch, tracking and reorder."
+      />
 
-      <section className="bg-white py-20">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6">
-          <ol className="space-y-5">
-            {steps.map((step, index) => (
-              <li key={step.title} className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-soft sm:grid-cols-[auto_1fr] sm:p-6">
-                <div className="flex items-center gap-3 sm:block">
-                  <span className="grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand-700"><step.icon className="h-5 w-5" /></span>
-                  <span className="text-xs font-extrabold uppercase tracking-widest text-slate-400 sm:mt-3 sm:block">Step {index + 1}</span>
-                </div>
-                <div>
-                  <h2 className="text-xl font-extrabold text-ink">{step.title}</h2>
-                  <p className="mt-2 leading-7 text-slate-600">{step.text}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="How it works"
+        title={
+          <>
+            Search, order, confirm, dispatch, <span className="text-brand-700">reorder</span>.
+          </>
+        }
+        intro="Every step updates the same authorised order record. Customers see progress; the agency retains operational control; stock movements remain auditable."
+        aside={
+          <div className="border-t border-line pt-5 text-sm leading-7 text-muted">
+            <p className="font-medium text-charcoal">A single record</p>
+            <p className="mt-1.5">
+              The catalogue, order, batch allocation, invoice and conversation stay connected from first request to
+              final payment.
+            </p>
+          </div>
+        }
+      />
 
-      <section className="border-y border-slate-200 bg-slate-50 py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-[.18em] text-medical-700">One workflow, three roles</p>
-            <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-ink">Each participant sees the work they are responsible for.</h2>
-          </div>
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {actors.map((actor) => (
-              <article key={actor.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft">
-                <span className="grid h-11 w-11 place-items-center rounded-xl bg-ink text-medical-300"><actor.icon className="h-5 w-5" /></span>
-                <h3 className="mt-5 text-lg font-extrabold text-ink">{actor.title}</h3>
-                <ul className="mt-4 space-y-3 text-sm text-slate-600">
-                  {actor.points.map((point) => <li key={point} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-medical-600" /> {point}</li>)}
-                </ul>
-              </article>
-            ))}
-          </div>
+      <PageSection tone="white">
+        <div className="max-w-2xl">
+          <SectionLabel>The process</SectionLabel>
+          <h2 className="mt-3 font-display text-[28px] font-semibold leading-[1.2] tracking-[-0.025em] text-charcoal sm:text-[32px]">
+            Seven steps, one accountable record.
+          </h2>
         </div>
-      </section>
 
-      <section className="bg-white py-20">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
-          <h2 className="text-3xl font-extrabold tracking-tight text-ink">Start with an account request.</h2>
-          <p className="mt-4 text-lg leading-8 text-slate-600">The agency reviews the medical shop before ordering access is enabled. No public user can create an agency administrator account.</p>
-          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link to="/register" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-brand-700 px-6 text-sm font-extrabold text-white hover:bg-brand-800">Get Started <ArrowRight className="h-4 w-4" /></Link>
-            <Link to="/contact" className="inline-flex h-12 items-center justify-center rounded-xl border border-slate-300 px-6 text-sm font-extrabold text-ink hover:border-brand-300">Talk to Us</Link>
-          </div>
+        <ol className="mt-10 divide-y divide-line border-y border-line">
+          {steps.map((step, index) => (
+            <li key={step.title} className="grid gap-3 py-6 sm:grid-cols-[auto_1fr_1.4fr] sm:items-start sm:gap-8">
+              <span className="font-display text-[13px] font-medium text-brand-700">0{index + 1}</span>
+              <h3 className="font-display text-[20px] font-semibold tracking-[-0.02em] text-charcoal">{step.title}</h3>
+              <p className="max-w-xl text-sm leading-7 text-muted">{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </PageSection>
+
+      <PageSection tone="parchment">
+        <div className="max-w-2xl">
+          <SectionLabel>One workflow, three roles</SectionLabel>
+          <h2 className="mt-3 font-display text-[28px] font-semibold leading-[1.2] tracking-[-0.025em] text-charcoal sm:text-[32px]">
+            Each participant sees the work they are responsible for.
+          </h2>
         </div>
-      </section>
+
+        <div className="mt-12 grid gap-10 lg:grid-cols-3 lg:gap-0">
+          {actors.map((actor, index) => (
+            <div
+              key={actor.label}
+              className={
+                index > 0
+                  ? 'border-t border-navy-300/60 pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0'
+                  : 'lg:pr-10'
+              }
+            >
+              <p className="text-[11px] font-medium uppercase tracking-[.14em] text-brand-700">{actor.label}</p>
+              <ul className="mt-4 space-y-2.5">
+                {actor.points.map((point) => (
+                  <li key={point} className="flex gap-2.5 text-sm leading-6 text-navy-700">
+                    <span aria-hidden className="mt-2.5 h-px w-3 shrink-0 bg-brand-500" />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </PageSection>
+
+      <CtaBand
+        title="Start with an account."
+        description="Shops and sales representatives can create and use their account right away. No public user can create an agency administrator account."
+      />
     </>
   );
 }

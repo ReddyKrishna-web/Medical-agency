@@ -119,6 +119,8 @@ The root [`.env.example`](.env.example) documents the full configuration. Import
 
 The frontend reads only `VITE_API_URL` and `VITE_SOCKET_URL`. No privileged secret belongs in a `VITE_*` variable.
 
+A migration from MongoDB to **Supabase** (PostgreSQL for application data, Supabase Auth for credentials) is in progress. Phase 1 adds the Prisma schema, Supabase clients and readiness tooling; the running API still uses MongoDB until the auth cutover is applied. See [`docs/SUPABASE_MIGRATION.md`](docs/SUPABASE_MIGRATION.md) for the required variables, migration commands and remaining phases.
+
 ## Database and tenant design
 
 - `Agency` is the tenant boundary and owns configuration/counters.

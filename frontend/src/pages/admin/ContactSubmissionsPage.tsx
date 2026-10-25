@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Inbox, Mail, Phone, RefreshCcw, Search, Trash2 } from 'lucide-react';
+import { Mail, Phone, RefreshCcw, Search, Trash2 } from 'lucide-react';
 import { apiMeta, apiSend } from '@/lib/api';
 import { mapContactSubmissions } from '@/lib/adapters';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -78,7 +78,7 @@ export default function ContactSubmissionsPage() {
   };
 
   const columns: Column<ContactSubmission>[] = [
-    { key: 'contact', header: 'Contact', render: (row) => <div><p className="font-bold text-slate-800">{row.name}</p><p className="text-xs text-slate-400">{row.email}</p></div> },
+    { key: 'contact', header: 'Contact', render: (row) => <div><p className="text-[13.5px] font-medium text-charcoal">{row.name}</p><p className="text-xs text-muted">{row.email}</p></div> },
     { key: 'organisation', header: 'Organisation', render: (row) => row.organisation || '—', mobileLabel: false },
     { key: 'topic', header: 'Topic', render: (row) => <Badge value={row.topic} /> },
     { key: 'received', header: 'Received', render: (row) => formatDate(row.createdAt, 'dd MMM yyyy, HH:mm'), mobileLabel: false },
@@ -99,7 +99,7 @@ export default function ContactSubmissionsPage() {
 
       <Card className="mb-5 p-4">
         <div className="grid gap-3 lg:grid-cols-[1fr_200px_220px]">
-          <div className="relative"><Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" /><TextInput aria-label="Search contact enquiries" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Name, email, organisation or message" className="pl-10" /></div>
+          <div className="relative"><Search className="absolute left-3.5 top-3.5 h-4 w-4 text-muted" /><TextInput aria-label="Search contact enquiries" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Name, email, organisation or message" className="pl-10" /></div>
           <SelectInput aria-label="Filter by status" value={status} onChange={(event) => { setStatus(event.target.value); setPage(1); }}><option value="">All statuses</option>{STATUSES.map((value) => <option key={value} value={value}>{humanize(value)}</option>)}</SelectInput>
           <SelectInput aria-label="Filter by topic" value={topic} onChange={(event) => { setTopic(event.target.value); setPage(1); }}><option value="">All topics</option>{['NEW_ORDER_ENQUIRY', 'PRODUCT_ENQUIRY', 'PRICING_REQUEST', 'PARTNERSHIP', 'COMPLAINT', 'SUPPORT', 'OTHER'].map((value) => <option key={value} value={value}>{humanize(value)}</option>)}</SelectInput>
         </div>
@@ -116,7 +116,6 @@ export default function ContactSubmissionsPage() {
           onRowClick={open}
           emptyTitle="No enquiries found"
           emptyDescription="Website contact submissions will appear here for agency review."
-          emptyAction={<Inbox className="h-5 w-5" />}
           footer={<Pagination page={page} limit={20} total={query.data?.total ?? 0} onPageChange={setPage} />}
         />
       </Card>
@@ -125,11 +124,11 @@ export default function ContactSubmissionsPage() {
         {selected && (
           <div className="space-y-5">
             <div className="grid gap-3 sm:grid-cols-2">
-              <a href={`mailto:${selected.email}`} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-semibold text-brand-700"><Mail className="h-4 w-4" /> {selected.email}</a>
-              {selected.phone && <a href={`tel:${selected.phone}`} className="flex items-center gap-2 rounded-xl border border-slate-200 p-3 text-sm font-semibold text-brand-700"><Phone className="h-4 w-4" /> {selected.phone}</a>}
+              <a href={`mailto:${selected.email}`} className="flex items-center gap-2 rounded-lg border border-line p-3 text-[13px] font-medium text-brand-700 transition-colors hover:border-brand-300"><Mail className="h-4 w-4" /> {selected.email}</a>
+              {selected.phone && <a href={`tel:${selected.phone}`} className="flex items-center gap-2 rounded-lg border border-line p-3 text-[13px] font-medium text-brand-700 transition-colors hover:border-brand-300"><Phone className="h-4 w-4" /> {selected.phone}</a>}
             </div>
-            <div><p className="text-xs font-bold uppercase tracking-wider text-slate-400">Topic</p><p className="mt-1 text-sm font-semibold text-slate-800">{humanize(selected.topic)}</p></div>
-            <div><p className="text-xs font-bold uppercase tracking-wider text-slate-400">Message</p><p className="mt-2 whitespace-pre-wrap rounded-xl bg-slate-50 p-4 text-sm leading-7 text-slate-700">{selected.message}</p></div>
+            <div><p className="text-[10px] font-medium uppercase tracking-[.12em] text-muted">Topic</p><p className="mt-1 text-[13px] font-medium text-charcoal">{humanize(selected.topic)}</p></div>
+            <div><p className="text-[10px] font-medium uppercase tracking-[.12em] text-muted">Message</p><p className="mt-2 whitespace-pre-wrap rounded-lg bg-ivory p-4 text-[13px] leading-7 text-navy-700">{selected.message}</p></div>
             <SelectInput aria-label="Enquiry status" value={editingStatus} onChange={(event) => setEditingStatus(event.target.value as ContactSubmissionStatus)}>{STATUSES.map((value) => <option key={value} value={value}>{humanize(value)}</option>)}</SelectInput>
             <Textarea aria-label="Internal notes" rows={4} value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Internal follow-up notes" />
             <div className="flex justify-end gap-2"><Button variant="ghost" onClick={() => setSelected(null)}>Cancel</Button><Button onClick={() => update.mutate()} loading={update.isPending} disabled={editingStatus === selected.status && notes.trim() === (selected.notes ?? '')}>Save enquiry</Button></div>

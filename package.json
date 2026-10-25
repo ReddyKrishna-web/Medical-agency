@@ -25,5 +25,12 @@
   "engines": {
     "node": ">=20.19.0",
     "npm": ">=10.0.0"
+  },
+  "allowScripts": {
+    "prisma@6.19.3": true,
+    "@prisma/client@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "esbuild": true,
+    "@embedded-postgres/windows-x64@18.4.0-beta.17": true
   }
 }

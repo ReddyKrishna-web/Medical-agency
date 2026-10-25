@@ -159,6 +159,7 @@ export default function ProductsPage() {
     {
       key: 'product',
       header: 'Product',
+      className: 'max-w-[340px]',
       render: (item) => (
         <div className="flex items-center gap-3">
           <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-lg bg-brand-50 text-brand-700">
@@ -177,29 +178,29 @@ export default function ProductsPage() {
             )}
           </span>
           <div className="min-w-0">
-            <p className="truncate font-bold text-slate-800">{item.name}</p>
-            <p className="truncate text-xs text-slate-400">
+            <p className="truncate text-[13.5px] font-medium text-charcoal">{item.name}</p>
+            <p className="truncate text-xs text-muted">
               {[item.genericName, item.brand, item.manufacturer].filter(Boolean).join(' / ') || item.sku}
             </p>
           </div>
         </div>
       ),
     },
-    { key: 'sku', header: 'SKU', render: (item) => <code className="text-xs text-slate-500">{item.sku}</code>, mobileLabel: false },
-    { key: 'pack', header: 'Pack', render: (item) => item.packSize || item.unit, mobileLabel: false },
+    { key: 'sku', header: 'SKU', render: (item) => <code className="whitespace-nowrap text-[11px] text-muted">{item.sku}</code>, mobileLabel: false },
+    { key: 'pack', header: 'Pack', render: (item) => <span className="whitespace-nowrap">{item.packSize || item.unit}</span>, mobileLabel: false },
     {
       key: 'price',
       header: 'Price',
       render: (item) => (
         <div>
-          <p className="font-bold text-slate-800">{formatCurrency(item.price)}</p>
-          {item.mrp !== undefined && item.mrp > 0 && (
-            <p className="text-xs text-slate-400">MRP {formatCurrency(item.mrp)}</p>
-          )}
+          <p className="whitespace-nowrap text-[13px] font-medium text-charcoal">{formatCurrency(item.price)}</p>
+          <p className="whitespace-nowrap text-[11px] text-muted">
+            {item.mrp !== undefined && item.mrp > 0 && <>MRP {formatCurrency(item.mrp)} · </>}
+            {formatNumber(item.taxRate)}% GST
+          </p>
         </div>
       ),
     },
-    { key: 'tax', header: 'GST', render: (item) => `${formatNumber(item.taxRate)}%`, mobileLabel: false },
     {
       key: 'stock',
       header: 'Available',
@@ -207,8 +208,8 @@ export default function ProductsPage() {
         const stock = productStock(item);
         const state = productAvailability(item);
         return (
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-700">{stock === undefined ? '—' : formatNumber(stock)}</span>
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <span className="text-[13px] font-medium tabular-nums text-charcoal">{stock === undefined ? '—' : formatNumber(stock)}</span>
             {state && <Badge value={state} />}
           </div>
         );
@@ -347,6 +348,7 @@ export default function ProductsPage() {
           columns={columns}
           rows={rows}
           getKey={(item) => item.id}
+          minWidth="1040px"
           loading={query.isLoading}
           error={query.error}
           onRetry={() => void query.refetch()}

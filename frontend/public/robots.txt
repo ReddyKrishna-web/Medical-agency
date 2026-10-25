@@ -10,4 +10,4 @@ Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /session-expired
 
-Sitemap: http://localhost:5174/sitemap.xml
+Sitemap: http://localhost:5173/sitemap.xml

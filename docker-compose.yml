@@ -1,13 +1,23 @@
+# Local development infrastructure.
+#
+# The API talks to MongoDB through Mongoose. For a managed deployment (Atlas,
+# your own replica set, ...) you do not need this file at all: set MONGODB_URI
+# and skip it.
+#
+#   docker compose up -d mongodb
+#
+# A single node cannot run multi-document transactions; the backend detects that
+# and falls back to its documented compensating saga (see README).
 services:
   mongodb:
-    image: mongo:8
+    image: mongo:7
     restart: unless-stopped
     ports:
       - "27017:27017"
     volumes:
       - supply-medicals-mongo:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
       interval: 10s
       timeout: 5s
       retries: 5

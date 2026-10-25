@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Bell, CheckCheck, X } from 'lucide-react';
 import { apiMeta, apiSend } from '@/lib/api';
+import { mapNotifications } from '@/lib/adapters';
 import { buildMarkNotificationsReadPayload } from '@/lib/payloads';
 import { useToast } from '@/contexts/ToastContext';
 import { errorMessage, timeAgo } from '@/lib/utils';
@@ -21,7 +22,7 @@ export function NotificationPanel({ open, onClose }: { open: boolean; onClose: (
     queryKey: ['notifications', { limit: 20 }],
     queryFn: async () => {
       const { data, meta } = await apiMeta<unknown>('/notifications', { params: { limit: 20 } });
-      return { items: data as AppNotification[], unread: Number(meta.unreadCount ?? 0) };
+      return { items: mapNotifications(data), unread: Number(meta.unreadCount ?? 0) };
     },
     enabled: open,
   });
@@ -58,14 +59,14 @@ export function NotificationPanel({ open, onClose }: { open: boolean; onClose: (
 
   return (
     <>
-      <button className="fixed inset-0 z-40 bg-ink/20 backdrop-blur-[1px]" onClick={onClose} aria-label="Close notifications" />
-      <aside aria-label="Notifications" className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col bg-white shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+      <button className="fixed inset-0 z-40 bg-charcoal/25" onClick={onClose} aria-label="Close notifications" />
+      <aside aria-label="Notifications" className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-line bg-white shadow-lift">
+        <div className="flex items-center justify-between border-b border-line px-5 py-4">
           <div>
-            <h2 className="font-extrabold text-ink">Notifications</h2>
-            <p className="text-xs text-slate-500">Live account updates</p>
+            <h2 className="text-[15px] font-semibold text-charcoal">Notifications</h2>
+            <p className="text-xs text-muted">Live account updates</p>
           </div>
-          <button onClick={onClose} className="rounded-lg p-2 hover:bg-slate-100" aria-label="Close">
+          <button onClick={onClose} className="rounded-md p-2 text-muted transition-colors hover:bg-parchment hover:text-charcoal" aria-label="Close">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -78,24 +79,24 @@ export function NotificationPanel({ open, onClose }: { open: boolean; onClose: (
           ) : query.error ? (
             <ErrorState error={query.error} onRetry={() => void query.refetch()} className="m-5" />
           ) : items.length ? (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-line/70">
               {items.map((item) => (
                 <li key={item.id}>
                   <button
                     onClick={() => openNotification(item)}
-                    className={`w-full px-5 py-4 text-left hover:bg-slate-50 ${!item.readAt ? 'bg-brand-50/40' : ''}`}
+                    className={`w-full px-5 py-4 text-left transition-colors hover:bg-ivory ${!item.readAt ? 'bg-sage/30' : ''}`}
                   >
                     <div className="flex gap-3">
-                      <span className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-100 text-brand-700">
+                      <span className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-md bg-sage text-brand-700">
                         <Bell className="h-4 w-4" />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-slate-800">{item.title}</p>
-                        <p className="mt-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        <p className="text-sm font-medium text-charcoal">{item.title}</p>
+                        <p className="mt-0.5 text-[10px] font-medium uppercase tracking-[.12em] text-muted">
                           {humanize(item.type)}
                         </p>
-                        {item.message && <p className="mt-1 text-sm leading-5 text-slate-500">{item.message}</p>}
-                        <p className="mt-1.5 text-xs text-slate-400">{timeAgo(item.createdAt)}</p>
+                        {item.message && <p className="mt-1 text-sm leading-5 text-navy-700">{item.message}</p>}
+                        <p className="mt-1.5 text-xs text-muted">{timeAgo(item.createdAt)}</p>
                       </div>
                     </div>
                   </button>
@@ -107,7 +108,7 @@ export function NotificationPanel({ open, onClose }: { open: boolean; onClose: (
           )}
         </div>
 
-        <div className="border-t border-slate-100 p-4">
+        <div className="border-t border-line p-4">
           <Button variant="outline" className="w-full" disabled={!items.some((item) => !item.readAt)} loading={mark.isPending} onClick={() => mark.mutate(true)}>
             <CheckCheck className="h-4 w-4" /> Mark all as read
           </Button>

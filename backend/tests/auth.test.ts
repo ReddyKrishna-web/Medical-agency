@@ -254,6 +254,7 @@ describe('authentication', () => {
   });
 
   it('logs out and clears the cookie', async () => {
+
     const registered = await request(agent())
       .post('/api/auth/register')
       .send(await validRegistration('logout-user@test.local'));
@@ -264,5 +265,63 @@ describe('authentication', () => {
 
     const afterLogout = await request(agent()).post('/api/auth/refresh').set('Cookie', cookie).send({});
     expect(afterLogout.status).toBe(401);
+  });
+});
+
+describe('login validation and safe failure handling', () => {
+  const login = (body: Record<string, unknown>) => request(agent()).post('/api/auth/login').send(body);
+
+  it('rejects a sign-in request with missing fields', async () => {
+    const response = await login({});
+
+    expect(response.status).toBe(422);
+    expect(expectError(response.body).code).toBe('VALIDATION_ERROR');
+  });
+
+  it('rejects a malformed email address', async () => {
+    const response = await login({ email: 'not-an-email', password: TEST_PASSWORD });
+
+    expect(response.status).toBe(422);
+    expect(expectError(response.body).code).toBe('VALIDATION_ERROR');
+  });
+
+  it('answers an unknown account and a wrong password identically, without creating a user', async () => {
+    const tenant = await createTenant(`login-${Date.now()}`);
+    const admin = await UserModel.findById(tenant.admin.id).lean<{ email: string }>();
+
+    const unknown = await login({ email: 'nobody-here@test.local', password: TEST_PASSWORD });
+    const wrongPassword = await login({ email: admin?.email, password: 'WrongPass123!' });
+
+    expect(unknown.status).toBe(401);
+    expect(wrongPassword.status).toBe(401);
+    const unknownError = expectError(unknown.body);
+    const wrongError = expectError(wrongPassword.body);
+    expect(unknownError.code).toBe('INVALID_CREDENTIALS');
+    expect(wrongError.code).toBe('INVALID_CREDENTIALS');
+    // Identical wording: the endpoint never discloses whether the account exists.
+    expect(unknownError.message).toBe(wrongError.message);
+    expect(unknownError.message).not.toMatch(/exist|registered|unknown/i);
+
+    expect(await UserModel.countDocuments({ email: 'nobody-here@test.local' })).toBe(0);
+  });
+
+  it('records a failed attempt without touching the stored password hash', async () => {
+    const tenant = await createTenant(`failed-${Date.now()}`);
+    type StoredLogin = { email: string; passwordHash: string; failedLoginCount?: number };
+
+    const before = await UserModel.findById(tenant.admin.id)
+      .select('email +passwordHash failedLoginCount')
+      .lean<StoredLogin>();
+    await login({ email: before?.email, password: 'WrongPass123!' });
+    const after = await UserModel.findById(tenant.admin.id)
+      .select('email +passwordHash failedLoginCount')
+      .lean<StoredLogin>();
+
+    expect(after?.passwordHash).toBe(before?.passwordHash);
+    expect(after?.failedLoginCount).toBe(1);
+
+    // The correct password still works right after a single failure.
+    const success = await login({ email: before?.email, password: TEST_PASSWORD });
+    expect(success.status).toBe(200);
   });
 });

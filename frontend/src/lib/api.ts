@@ -39,6 +39,65 @@ export const setSessionExpiredHandler = (handler: () => void) => {
   sessionExpiredHandler = handler;
 };
 
+/**
+ * A 401 from these endpoints means "bad credentials", not "expired session".
+ * They must never trigger a refresh round-trip: it would add a second request to
+ * every failed sign-in and, once the refresh fails, clear unrelated UI state.
+ */
+const NO_REFRESH_PATHS = [
+  '/auth/login',
+  '/auth/register',
+  '/auth/register-agency',
+  '/auth/refresh',
+  '/auth/logout',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+];
+
+const isRefreshable = (url?: string) => !url || !NO_REFRESH_PATHS.some((path) => url.includes(path));
+
+const NETWORK_MESSAGE = 'Unable to reach the service. Check that the API server is running and try again.';
+const TIMEOUT_MESSAGE = 'The service took too long to respond. Please try again.';
+
+/**
+ * Maps an HTTP status to a truthful message. The previous implementation reported
+ * every error without a parsed body as a connection failure, which described a
+ * 500, a 403 or an HTML proxy error as "check your connection".
+ */
+export const apiErrorMessage = (status?: number, timedOut = false): string => {
+  if (timedOut) return TIMEOUT_MESSAGE;
+  // Only a request that never received a response is a connectivity failure.
+  if (!status) return NETWORK_MESSAGE;
+  switch (status) {
+    case 400:
+      return 'The request could not be processed. Check the details you submitted and try again.';
+    case 401:
+      return 'Your session is no longer valid. Sign in again to continue.';
+    case 403:
+      return 'You do not have access to this action.';
+    case 404:
+      return 'The requested resource was not found.';
+    case 408:
+      return TIMEOUT_MESSAGE;
+    case 409:
+      return 'That request conflicted with the current data. Refresh the page and try again.';
+    case 413:
+      return 'The submitted data is too large.';
+    case 422:
+      return 'Some details need attention. Check the highlighted fields and try again.';
+    case 429:
+      return 'Too many requests. Please wait a moment and try again.';
+    case 500:
+      return 'The service encountered an error. Please try again shortly.';
+    case 502:
+    case 503:
+    case 504:
+      return 'The service is temporarily unavailable. Please try again shortly.';
+    default:
+      return 'The service could not complete this request. Please try again shortly.';
+  }
+};
+
 async function refreshAccessToken() {
   if (!refreshPromise) {
     refreshPromise = axios
@@ -74,7 +133,8 @@ client.interceptors.response.use((response) => response, async (error: AxiosErro
   const original = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
   const status = error.response?.status;
 
-  if (status === 401 && original && !original._retry && !original.url?.includes('/auth/refresh')) {
+  // Only renew a session that actually exists, and never for credential endpoints.
+  if (status === 401 && original && !original._retry && getAccessToken() && isRefreshable(original.url)) {
     original._retry = true;
     const token = await refreshAccessToken();
     if (token) {
@@ -85,14 +145,15 @@ client.interceptors.response.use((response) => response, async (error: AxiosErro
   }
 
   const body = error.response?.data?.error;
+  const timedOut = error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT';
+  // No response at all = the request never reached the API (server down, DNS,
+  // blocked by CORS, offline). Every other case has a real HTTP status.
+  const message = body?.message || apiErrorMessage(status, timedOut);
   return Promise.reject(
     new ApiError(
-      body?.message ||
-        (error.code === 'ECONNABORTED'
-          ? 'The request timed out. Please try again.'
-          : 'Unable to reach the service. Check your connection and try again.'),
+      message,
       status || 0,
-      body?.code || error.code || 'REQUEST_FAILED',
+      body?.code || (timedOut ? 'REQUEST_TIMEOUT' : error.code || (status ? 'REQUEST_FAILED' : 'NETWORK_ERROR')),
       body?.details,
     ),
   );
@@ -169,6 +230,17 @@ function asApiError(error: unknown, isBlob = false): ApiError {
     // A blob error response hides the JSON envelope; surface a readable message.
     const message = extractBlobErrorMessage(error.response?.data) ?? 'The file could not be downloaded.';
     return new ApiError(message, error.response?.status ?? 0, 'REQUEST_FAILED');
+  }
+  if (axios.isAxiosError(error)) {
+    // The response interceptor already converted this; keep a truthful fallback
+    // for requests that bypassed it (for example an aborted request).
+    return new ApiError(
+      error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT'
+        ? TIMEOUT_MESSAGE
+        : apiErrorMessage(error.response?.status),
+      error.response?.status ?? 0,
+      error.code || 'REQUEST_FAILED',
+    );
   }
   return new ApiError('An unexpected error occurred.');
 }

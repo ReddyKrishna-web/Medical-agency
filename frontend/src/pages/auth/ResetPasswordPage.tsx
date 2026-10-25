@@ -78,7 +78,7 @@ export default function ResetPasswordPage() {
         </Button>
       </form>
       <p className="mt-7 text-center text-sm">
-        <Link to="/forgot-password" className="font-bold text-brand-700">
+        <Link to="/forgot-password" className="font-medium text-brand-700">
           Request a new link
         </Link>
       </p>

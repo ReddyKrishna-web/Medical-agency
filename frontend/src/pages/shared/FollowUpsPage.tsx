@@ -132,8 +132,8 @@ export default function FollowUpsPage() {
       header: 'Follow-up',
       render: (item) => (
         <div>
-          <p className="font-bold text-slate-800">{item.title}</p>
-          <p className="mt-1 line-clamp-1 text-xs text-slate-500">{item.notes || 'No notes added'}</p>
+          <p className="text-[13.5px] font-medium text-charcoal">{item.title}</p>
+          <p className="mt-1 line-clamp-1 text-xs text-muted">{item.notes || 'No notes added'}</p>
         </div>
       ),
     },
@@ -196,9 +196,9 @@ export default function FollowUpsPage() {
         }
       />
 
-      <div className="mb-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft sm:grid-cols-[1fr_180px_160px]">
+      <div className="mb-4 grid gap-3 rounded-lg border border-line bg-white p-4 sm:grid-cols-[1fr_180px_160px]">
         <div className="relative">
-          <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-muted" />
           <TextInput
             aria-label="Search follow-ups"
             value={search}
@@ -350,7 +350,7 @@ export default function FollowUpsPage() {
             />
           </Field>
           {editing && (
-            <div className="rounded-xl bg-slate-50 p-3 text-xs text-slate-500">
+            <div className="rounded-md bg-ivory p-3 text-xs leading-5 text-muted">
               Current status: <strong>{humanize(editing.status)}</strong>. Changing status uses the dedicated status
               action so the service can validate the transition.
             </div>
@@ -360,8 +360,8 @@ export default function FollowUpsPage() {
 
       {editing && (
         <Card className="mt-4 p-4">
-          <p className="text-sm font-bold text-slate-800">Change status</p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="text-sm text-[13.5px] font-medium text-charcoal">Change status</p>
+          <p className="mt-1 text-xs text-muted">
             The service only accepts PENDING to COMPLETED or CANCELLED, and a completed follow-up can no longer change.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">

@@ -211,10 +211,14 @@ export const publicAgencies = asyncHandler(async (_req: Request, res: Response) 
 
 export const health = asyncHandler(async (_req: Request, res: Response) => {
   const { isDatabaseHealthy } = await import('../config/database');
+  const { env } = await import('../config/env');
   const mongo = getTransactionCapability();
   const databaseUp = isDatabaseHealthy();
   const startedAt = Date.now();
 
+  // Phase 1 of the Supabase migration: MongoDB still serves all business data,
+  // so readiness is driven by MongoDB. PostgreSQL/Supabase state is reported as
+  // configuration only; `npm run supabase:check` performs the live probe.
   sendData(res, {
     status: databaseUp ? 'ok' : 'degraded',
     service: 'supply-medicals-api',
@@ -223,6 +227,12 @@ export const health = asyncHandler(async (_req: Request, res: Response) => {
       connected: databaseUp,
       transactions: mongo.supported,
       transactionNote: mongo.reason
+    },
+    postgres: {
+      configured: env.postgresConfigured
+    },
+    supabaseAuth: {
+      configured: env.supabaseAuthConfigured
     },
     uptimeSeconds: Math.floor(process.uptime()),
     latencyMs: Date.now() - startedAt,

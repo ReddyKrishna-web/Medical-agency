@@ -101,7 +101,7 @@ export default function ProfilePage() {
       />
 
       {user.mustChangePassword && (
-        <div role="alert" className="mb-5 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+        <div role="alert" className="mb-5 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
           <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
           <p>
             <strong>Password change required.</strong> Your account was provisioned with a temporary password. Set a
@@ -113,7 +113,7 @@ export default function ProfilePage() {
       <div className="grid items-start gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
         <Card>
           <CardBody className="text-center">
-            <div className="mx-auto grid h-24 w-24 place-items-center overflow-hidden rounded-full bg-brand-100 text-2xl font-extrabold text-brand-800 ring-8 ring-brand-50">
+            <div className="mx-auto grid h-20 w-20 place-items-center overflow-hidden rounded-full bg-sage text-xl font-semibold text-brand-800 ring-4 ring-ivory">
               {user.avatarUrl ? (
                 <img
                   src={user.avatarUrl}
@@ -127,45 +127,45 @@ export default function ProfilePage() {
                 initials(user.name || user.email)
               )}
             </div>
-            <h2 className="mt-5 text-xl font-extrabold text-ink">{user.name}</h2>
-            <p className="mt-1 text-sm text-slate-500">{user.email}</p>
-            <span className="mt-4 inline-flex rounded-full bg-medical-50 px-3 py-1.5 text-xs font-bold text-medical-700">
+            <h2 className="mt-4 text-lg font-semibold text-charcoal">{user.name}</h2>
+            <p className="mt-1 text-[13px] text-muted">{user.email}</p>
+            <span className="mt-4 inline-flex rounded-md border border-brand-200 bg-sage/60 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[.1em] text-brand-800">
               {roleLabel[role]}
             </span>
-            <dl className="mt-6 space-y-3 border-t border-slate-100 pt-5 text-left text-sm">
+            <dl className="mt-6 space-y-3 border-t border-line pt-5 text-left text-[13px]">
               <div className="flex justify-between gap-3">
-                <dt className="text-slate-500">Account status</dt>
-                <dd className="font-semibold text-slate-800">{user.status}</dd>
+                <dt className="text-muted">Account status</dt>
+                <dd className="font-medium text-charcoal">{user.status}</dd>
               </div>
               {user.customer && (
                 <>
                   <div className="flex justify-between gap-3">
-                    <dt className="text-slate-500">Business</dt>
-                    <dd className="max-w-[60%] truncate text-right font-semibold text-slate-800">
+                    <dt className="text-muted">Business</dt>
+                    <dd className="max-w-[60%] truncate text-right font-medium text-charcoal">
                       {user.customer.businessName}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-3">
-                    <dt className="text-slate-500">Account status</dt>
-                    <dd className="font-semibold text-slate-800">{user.customer.status}</dd>
+                    <dt className="text-muted">Account status</dt>
+                    <dd className="font-medium text-charcoal">{user.customer.status}</dd>
                   </div>
                 </>
               )}
               {user.salesman && (
                 <>
                   <div className="flex justify-between gap-3">
-                    <dt className="text-slate-500">Employee code</dt>
-                    <dd className="font-semibold text-slate-800">{user.salesman.employeeCode}</dd>
+                    <dt className="text-muted">Employee code</dt>
+                    <dd className="font-medium text-charcoal">{user.salesman.employeeCode}</dd>
                   </div>
                   <div className="flex justify-between gap-3">
-                    <dt className="text-slate-500">Territory</dt>
-                    <dd className="font-semibold text-slate-800">{user.salesman.territory || '—'}</dd>
+                    <dt className="text-muted">Territory</dt>
+                    <dd className="font-medium text-charcoal">{user.salesman.territory || '—'}</dd>
                   </div>
                 </>
               )}
               <div className="flex justify-between gap-3">
-                <dt className="text-slate-500">Member since</dt>
-                <dd className="font-semibold text-slate-800">{formatDate(user.createdAt)}</dd>
+                <dt className="text-muted">Member since</dt>
+                <dd className="font-medium text-charcoal">{formatDate(user.createdAt)}</dd>
               </div>
             </dl>
           </CardBody>
@@ -261,11 +261,11 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <p className="mt-6 flex items-center gap-2 text-xs text-slate-400">
+      <p className="mt-6 flex flex-wrap items-center gap-2 text-xs text-muted">
         <UserRound className="h-4 w-4" />
         Role and account status are controlled by the service and cannot be edited here.
         <LogOut className="ml-2 h-4 w-4" />
-        <button className="font-semibold text-brand-700" onClick={() => void logout().then(() => navigate('/login', { replace: true }))}>
+        <button className="font-medium text-brand-700" onClick={() => void logout().then(() => navigate('/login', { replace: true }))}>
           Sign out of this device
         </button>
       </p>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Bell, CheckCheck } from 'lucide-react';
 import { apiMeta, apiSend } from '@/lib/api';
+import { mapNotifications } from '@/lib/adapters';
 import { buildMarkNotificationsReadPayload } from '@/lib/payloads';
 import { useToast } from '@/contexts/ToastContext';
 import { errorMessage, timeAgo } from '@/lib/utils';
@@ -11,7 +12,6 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Pagination } from '@/components/ui/Pagination';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/States';
-import type { AppNotification } from '@/types/api';
 
 export default function NotificationsPage() {
   const [page, setPage] = useState(1);
@@ -22,7 +22,7 @@ export default function NotificationsPage() {
     queryKey: ['notifications', { page, limit: 25 }],
     queryFn: async () => {
       const { data, meta } = await apiMeta<unknown>('/notifications', { params: { page, limit: 25 } });
-      return { rows: data as AppNotification[], total: Number(meta.total ?? 0) };
+      return { rows: mapNotifications(data), total: Number(meta.total ?? 0) };
     },
     placeholderData: (previous) => previous,
   });
@@ -78,25 +78,25 @@ export default function NotificationsPage() {
         ) : query.error ? (
           <ErrorState error={query.error} onRetry={() => void query.refetch()} />
         ) : rows.length ? (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line/70">
             {rows.map((item) => (
-              <li key={item.id} className={`flex gap-4 p-5 transition hover:bg-slate-50 ${!item.readAt ? 'bg-brand-50/40' : ''}`}>
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-100 text-brand-700">
+              <li key={item.id} className={`flex gap-4 p-5 transition-colors hover:bg-ivory ${!item.readAt ? 'bg-brand-50/40' : ''}`}>
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-sage text-brand-700">
                   <Bell className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-bold text-ink">{item.title}</p>
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
+                    <p className="text-[13.5px] font-medium text-charcoal">{item.title}</p>
+                    <span className="rounded bg-parchment px-2 py-0.5 text-[10px] font-medium uppercase tracking-[.08em] text-muted">
                       {humanize(item.type)}
                     </span>
-                    {!item.readAt && <span className="h-2 w-2 rounded-full bg-brand-600" />}
+                    {!item.readAt && <span className="h-1.5 w-1.5 rounded-full bg-brand-600" />}
                   </div>
-                  {item.message && <p className="mt-1 text-sm leading-6 text-slate-600">{item.message}</p>}
-                  <p className="mt-2 text-xs text-slate-400">{timeAgo(item.createdAt)}</p>
+                  {item.message && <p className="mt-1 text-[13px] leading-6 text-navy-700">{item.message}</p>}
+                  <p className="mt-2 text-xs text-muted">{timeAgo(item.createdAt)}</p>
                 </div>
                 {!item.readAt && (
-                  <button onClick={() => mark.mutate(item.id)} className="shrink-0 self-start text-xs font-semibold text-slate-500 hover:text-brand-700">
+                  <button onClick={() => mark.mutate(item.id)} className="shrink-0 self-start text-xs font-medium text-navy-700 hover:text-brand-700">
                     Mark read
                   </button>
                 )}

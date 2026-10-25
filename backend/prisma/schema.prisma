@@ -1,0 +1,99 @@
+// Supply Medicals — PostgreSQL schema hosted on Supabase.
+//
+// Phase 1 of the MongoDB -> Supabase migration owns the authentication domain:
+// agencies, users and their Supabase Auth identities. Business collections
+// (orders, inventory, invoices, messaging, reports) remain in MongoDB until the
+// following phases and keep referencing the same 24-hex agency/user ids, so
+// both stores agree on identity while the cutover is in progress.
+//
+// Connection strings (Supabase dashboard -> Project Settings -> Database):
+//   DATABASE_URL  pooled / transaction mode, port 6543, used by the API
+//   DIRECT_URL    direct connection, port 5432, used only by migrations
+//
+// Run with: npm run prisma:migrate:deploy -w backend
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  CUSTOMER
+  SALESMAN
+  AGENCY_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING
+  DISABLED
+}
+
+enum AgencyStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+/// Tenant boundary. Nested configuration is stored as JSONB so the existing
+/// service-layer shapes (contact, tax, orderSettings, features,
+/// businessHours, notifications) carry over unchanged.
+model Agency {
+  id             String       @id @db.Char(24)
+  name           String       @db.VarChar(120)
+  slug           String       @unique @db.VarChar(80)
+  legalName      String?      @map("legal_name") @db.VarChar(160)
+  status         AgencyStatus @default(ACTIVE)
+  logoUrl        String?      @map("logo_url") @db.VarChar(500)
+  website        String?      @db.VarChar(200)
+  description    String?      @db.VarChar(2000)
+  contact        Json
+  tax            Json
+  orderSettings  Json         @map("order_settings")
+  features       Json
+  businessHours  Json         @default("{}") @map("business_hours")
+  notifications  Json
+  createdBy      String?      @map("created_by") @db.Char(24)
+  updatedBy      String?      @map("updated_by") @db.Char(24)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  users User[]
+
+  @@index([name])
+  @@map("agencies")
+}
+
+/// Application profile for an authenticated Supabase Auth user. Credentials,
+/// email verification, password resets, lockouts and refresh-token rotation are
+/// owned by Supabase Auth (`auth.users`); this table owns tenant, role and
+/// approval state. `authUserId` is the `auth.users.id` UUID and is intentionally
+/// not declared as a Prisma relation: the `auth` schema is managed by Supabase.
+model User {
+  id                 String     @id @db.Char(24)
+  agencyId           String     @map("agency_id") @db.Char(24)
+  authUserId         String     @unique @map("auth_user_id") @db.Uuid
+  name               String     @db.VarChar(120)
+  email              String     @unique @db.VarChar(160)
+  phone              String?    @db.VarChar(32)
+  role               Role
+  status             UserStatus @default(PENDING)
+  avatarUrl          String?    @map("avatar_url") @db.VarChar(500)
+  lastLoginAt        DateTime?  @map("last_login_at")
+  passwordChangedAt  DateTime?  @map("password_changed_at")
+  mustChangePassword Boolean    @default(false) @map("must_change_password")
+  createdBy          String?    @map("created_by") @db.Char(24)
+  updatedBy          String?    @map("updated_by") @db.Char(24)
+  createdAt          DateTime   @default(now()) @map("created_at")
+  updatedAt          DateTime   @updatedAt @map("updated_at")
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Restrict)
+
+  @@index([agencyId, role, status])
+  @@index([agencyId, name])
+  @@map("users")
+}

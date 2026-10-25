@@ -12,6 +12,7 @@ import type {
   ActivityLog,
   AgencySettings,
   AgencySummary,
+  AppNotification,
   AuthUser,
   Availability,
   Batch,
@@ -191,6 +192,8 @@ export const mapSession = (raw: unknown): { user: User; accessToken: string; sta
   // The login response carries a small `{ name, slug }` agency summary.
   const user = mapAuthUser({ user: envelope.user, profile: null, agency: envelope.agency });
   if (!user) throw new Error('The service did not return an account profile.');
+  // Never mark the UI as signed in without a usable access token.
+  if (!accessToken) throw new Error('The service did not return a session token. Please try again.');
   return { user, accessToken, statusMessage: str(envelope.status) };
 };
 
@@ -1137,3 +1140,22 @@ export const mapPayment = (raw: unknown): Payment => {
 };
 
 export const mapPayments = (raw: unknown): Payment[] => asArray<unknown>(raw).map(mapPayment);
+
+/** `GET /notifications` returns raw documents with `_id`, so normalise the id. */
+export const mapNotification = (raw: unknown): AppNotification => {
+  const value = withId(asDict(raw));
+  return {
+    id: value.id,
+    type: str(value.type) ?? 'SYSTEM',
+    title: str(value.title) ?? '',
+    message: str(value.message) ?? '',
+    data: isObject(value.data) ? value.data : undefined,
+    entityType: str(value.entityType),
+    entityId: str(value.entityId) ?? (idOf(value.entityId) || undefined),
+    readAt: str(value.readAt) ?? null,
+    createdAt: str(value.createdAt) ?? '',
+  };
+};
+
+export const mapNotifications = (raw: unknown): AppNotification[] => asArray<unknown>(raw).map(mapNotification);
+

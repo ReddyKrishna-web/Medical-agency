@@ -93,8 +93,8 @@ export default function RequirementsListPage() {
       header: 'Requirement',
       render: (item) => (
         <div>
-          <p className="font-bold text-slate-800">{item.title}</p>
-          <p className="mt-0.5 text-xs text-slate-400">{item.file.originalName}</p>
+          <p className="text-[13.5px] font-medium text-charcoal">{item.title}</p>
+          <p className="mt-0.5 text-xs text-muted">{item.file.originalName}</p>
         </div>
       ),
     },
@@ -167,7 +167,7 @@ export default function RequirementsListPage() {
         }
       />
 
-      <div className="mb-4 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft sm:grid-cols-[1fr_200px]">
+      <div className="mb-4 grid gap-3 rounded-lg border border-line bg-white p-4 sm:grid-cols-[1fr_200px]">
         <TextInput
           aria-label="Search requirements"
           value={search}
@@ -243,10 +243,10 @@ export default function RequirementsListPage() {
           }}
         >
           <Field id="requirement-file" label="Document" required hint="One file, validated by content before storage.">
-            <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center hover:border-brand-400 hover:bg-brand-50">
+            <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-navy-300 bg-ivory px-5 py-8 text-center transition-colors hover:border-brand-400 hover:bg-sage/40">
               <UploadCloud className="h-8 w-8 text-brand-600" />
-              <span className="mt-3 text-sm font-semibold text-slate-700">{file ? file.name : 'Choose a file'}</span>
-              {file && <span className="mt-1 text-xs text-slate-500">{fileSize(file.size)}</span>}
+              <span className="mt-3 text-[13px] font-medium text-charcoal">{file ? file.name : 'Choose a file'}</span>
+              {file && <span className="mt-1 text-xs text-muted">{fileSize(file.size)}</span>}
               <input
                 type="file"
                 className="sr-only"
