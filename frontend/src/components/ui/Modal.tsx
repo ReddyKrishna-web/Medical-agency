@@ -40,7 +40,7 @@ export function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-charcoal/40 p-0 sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex animate-fade-in items-end justify-center bg-charcoal/40 p-0 sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
@@ -50,7 +50,7 @@ export function Modal({
     >
       <div
         className={cn(
-          'max-h-[92dvh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-lift sm:rounded-xl',
+          'max-h-[92dvh] w-full animate-scale-in overflow-y-auto rounded-t-2xl bg-white shadow-lift sm:rounded-xl',
           {
             'sm:max-w-md': size === 'sm',
             'sm:max-w-xl': size === 'md',

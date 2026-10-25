@@ -3,6 +3,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -71,6 +72,124 @@ export function Reveal({
       ref={ref}
       className={cn('reveal', visible && 'is-visible', className)}
       style={{ '--reveal-delay': `${delay}ms` } as CSSProperties}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Moves children a few pixels against the scroll direction. The offset is
+ * driven by a single rAF-throttled scroll listener and is disabled entirely
+ * for reduced-motion users, so it never blocks reading or navigation.
+ */
+export function Parallax({
+  children,
+  speed = 12,
+  className,
+}: {
+  children: ReactNode;
+  speed?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const reduced = usePrefersReducedMotion();
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    if (reduced) {
+      element.style.transform = '';
+      return;
+    }
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = element.getBoundingClientRect();
+      const viewport = window.innerHeight || 1;
+      const progress = Math.max(
+        -1,
+        Math.min(1, (rect.top + rect.height / 2 - viewport / 2) / viewport),
+      );
+      element.style.transform = `translate3d(0, ${(-progress * speed).toFixed(2)}px, 0)`;
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    return () => {
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [reduced, speed]);
+
+  return (
+    <div ref={ref} className={className} style={{ willChange: reduced ? undefined : 'transform' }}>
+      {children}
+    </div>
+  );
+}
+
+/**
+ * A restrained pointer tilt for selected images and panels. Only fine
+ * pointers with hover get the effect; touch devices keep a static layout and
+ * reduced-motion users are never moved.
+ */
+export function Tilt({
+  children,
+  className,
+  max = 4,
+  scale = 1.01,
+}: {
+  children: ReactNode;
+  className?: string;
+  max?: number;
+  scale?: number;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const reduced = usePrefersReducedMotion();
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    if (reduced) {
+      setEnabled(false);
+      return;
+    }
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const media = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const sync = () => setEnabled(media.matches);
+    sync();
+    media.addEventListener?.('change', sync);
+    return () => media.removeEventListener?.('change', sync);
+  }, [reduced]);
+
+  const reset = () => {
+    if (ref.current) ref.current.style.transform = '';
+  };
+
+  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const element = ref.current;
+    if (!enabled || !element) return;
+    const rect = element.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    element.style.transform = `perspective(1100px) rotateX(${(-y * max).toFixed(2)}deg) rotateY(${(x * max).toFixed(2)}deg) scale(${scale})`;
+  };
+
+  return (
+    <div
+      ref={ref}
+      className={cn('tilt', className)}
+      onPointerMove={onPointerMove}
+      onPointerLeave={reset}
+      onPointerCancel={reset}
+      onBlur={reset}
     >
       {children}
     </div>

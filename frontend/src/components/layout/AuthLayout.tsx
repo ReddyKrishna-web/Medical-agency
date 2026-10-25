@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Logo } from '@/components/Logo';
+import { PageTransition } from '@/components/motion/Motion';
 
 const facts = [
   ['Three roles', 'Agency administrators, sales representatives and medical shops work from one record.'],
@@ -95,7 +96,9 @@ export default function AuthLayout() {
 
         <div className="flex flex-1 items-start justify-center px-4 pb-16 sm:px-8 lg:items-center">
           <div className="w-full max-w-md">
-            <Outlet />
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
           </div>
         </div>
       </main>

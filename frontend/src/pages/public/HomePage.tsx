@@ -1,10 +1,25 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowRight, Barcode, Boxes, ClipboardCheck, ClipboardList, ListChecks, PackageCheck, ReceiptText, Truck } from 'lucide-react';
+import {
+  ArrowRight,
+  Barcode,
+  Boxes,
+  BriefcaseBusiness,
+  Building2,
+  ClipboardCheck,
+  ClipboardList,
+  ListChecks,
+  PackageCheck,
+  ReceiptText,
+  Store,
+  Truck,
+} from 'lucide-react';
 import { publicApi } from '@/lib/api';
 import { SEO } from '@/components/ui/SEO';
 import { CtaBand, PageSection, SectionLabel } from '@/components/landing/Editorial';
-import { Reveal } from '@/components/motion/Motion';
+import { Parallax, Reveal, Tilt } from '@/components/motion/Motion';
+import { cn } from '@/lib/utils';
 
 const orderRows = [
   { group: 'Wound care and dressings', reference: 'Order 2481', status: 'Confirmed' },
@@ -21,6 +36,33 @@ const heroBenefits = [
   { icon: PackageCheck, text: 'Batch-aware stock control, received and allocated by expiry.' },
   { icon: ClipboardCheck, text: 'A guarded fulfilment lifecycle with a recorded history.' },
   { icon: ReceiptText, text: 'Invoices and payment records the agency and shop can revisit.' },
+];
+
+const workflowSteps = [
+  {
+    icon: ClipboardList,
+    title: 'Order',
+    text: 'A shop or its sales representative builds an order from the active catalogue. The browser never sets the authoritative price.',
+    detail: 'Pricing, tax and availability are resolved by the service when the order is submitted.',
+  },
+  {
+    icon: Boxes,
+    title: 'Allocate',
+    text: 'The agency reviews availability and allocates specific batches, earliest expiry first, against each line.',
+    detail: 'Each line is tied to a batch, so the stock that leaves is the stock that was recorded.',
+  },
+  {
+    icon: Truck,
+    title: 'Fulfil',
+    text: 'Packing and dispatch move through a guarded lifecycle, with timestamped status history on every step.',
+    detail: 'Every transition is checked against the order state and written to its history.',
+  },
+  {
+    icon: ReceiptText,
+    title: 'Invoice',
+    text: 'The invoice, payment record and order history remain available to the people who are allowed to see them.',
+    detail: 'Payments are recorded against the internal ledger; access stays scoped to the account.',
+  },
 ];
 
 const capabilities = [
@@ -44,18 +86,21 @@ const capabilities = [
 
 const roles = [
   {
+    icon: Building2,
     label: 'Agency administrators',
     title: 'Run the operation from one desk.',
     text: 'Approvals, catalogue, stock, sales coverage and payment records, arranged in the order the work arrives.',
     points: ['Customer and salesmen administration', 'Inventory health and expiry signals', 'Reports drawn from real records'],
   },
   {
+    icon: BriefcaseBusiness,
     label: 'Sales representatives',
     title: 'Stay close to the shops you serve.',
     text: 'Assigned accounts, follow-ups and order creation sit together so the next conversation is always prepared.',
     points: ['A focused customer portfolio', 'Dated follow-up planning', 'Order entry on behalf of a shop'],
   },
   {
+    icon: Store,
     label: 'Medical shops',
     title: 'Order without the back-and-forth.',
     text: 'Find products, check availability, repeat a familiar order and follow it through to invoice.',
@@ -176,6 +221,7 @@ export default function HomePage() {
     staleTime: 300_000,
   }).data;
   const agencyName = agency?.name || 'Supply Medicals';
+  const [activeStep, setActiveStep] = useState(0);
 
   return (
     <>
@@ -206,9 +252,10 @@ export default function HomePage() {
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   to="/register"
-                  className="inline-flex h-11 items-center gap-2 rounded-lg bg-forest px-5 text-sm font-medium text-white transition-colors hover:bg-brand-800"
+                  className="group inline-flex h-11 items-center gap-2 rounded-lg bg-forest px-5 text-sm font-medium text-white transition-colors hover:bg-brand-800"
                 >
-                  Create account <ArrowRight className="h-4 w-4" />
+                  Create account
+                  <ArrowRight className="h-4 w-4 transition-transform duration-200 ease-smooth group-hover:translate-x-0.5" aria-hidden />
                 </Link>
                 <Link
                   to="/login"
@@ -239,18 +286,20 @@ export default function HomePage() {
 
           <div className="pb-6 lg:pb-2">
             <Reveal delay={160}>
-              <div className="relative">
-                <figure className="aspect-[4/5] overflow-hidden rounded-xl border border-line bg-white shadow-lift">
-                  <img
-                    src="/images/hero-pharmacist.jpg"
-                    alt="A pharmacist working at the dispensing counter with a barcode scanner, organised medicine shelves behind him"
-                    width={1600}
-                    height={2400}
-                    loading="eager"
-                    decoding="async"
-                    className="reveal-scale h-full w-full object-cover object-[38%_22%]"
-                  />
-                </figure>
+              <Parallax speed={10} className="relative">
+                <Tilt max={3.5} scale={1.005} className="relative">
+                  <figure className="group aspect-[4/5] overflow-hidden rounded-xl border border-line bg-white shadow-lift">
+                    <img
+                      src="/images/hero-pharmacist.jpg"
+                      alt="A pharmacist working at the dispensing counter with a barcode scanner, organised medicine shelves behind him"
+                      width={1600}
+                      height={2400}
+                      loading="eager"
+                      decoding="async"
+                      className="reveal-scale h-full w-full object-cover object-[38%_22%] transition-transform duration-[900ms] ease-smooth group-hover:scale-[1.03]"
+                    />
+                  </figure>
+                </Tilt>
 
                 <Reveal delay={480} className="relative mt-4 lg:absolute lg:-bottom-6 lg:-left-6 lg:mt-0">
                   <FulfilmentQueueCard />
@@ -259,7 +308,7 @@ export default function HomePage() {
                 <Reveal delay={620} className="hidden sm:block sm:absolute sm:right-4 sm:top-3 lg:-top-5 lg:right-8">
                   <StockAlertCard />
                 </Reveal>
-              </div>
+              </Parallax>
             </Reveal>
 
             <p className="mt-6 flex items-center gap-2 text-[11px] leading-5 text-muted lg:justify-end">
@@ -345,53 +394,85 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <ol className="mt-12 grid gap-10 md:grid-cols-4 md:gap-6">
-          {[
-            { icon: ClipboardList, title: 'Order', text: 'A shop or its sales representative builds an order from the active catalogue. The browser never sets the authoritative price.' },
-            { icon: Boxes, title: 'Allocate', text: 'The agency reviews availability and allocates specific batches, earliest expiry first, against each line.' },
-            { icon: Truck, title: 'Fulfil', text: 'Packing and dispatch move through a guarded lifecycle, with timestamped status history on every step.' },
-            { icon: ReceiptText, title: 'Invoice', text: 'The invoice, payment record and order history remain available to the people who are allowed to see them.' },
-          ].map(({ icon: Icon, title, text }, index) => (
-            <li
-              key={title}
-              className="relative border-l border-navy-300/60 pl-6 md:border-l-0 md:pl-0 md:pr-7"
-            >
-              {index < 3 && (
+        <div className="mt-12">
+          <div className="mb-4 flex items-center gap-4">
+            <p className="shrink-0 text-[11px] font-medium uppercase tracking-[.14em] text-muted">
+              Step {activeStep + 1} of {workflowSteps.length}
+            </p>
+            <div className="flex flex-1 items-center gap-1.5 sm:max-w-xs" aria-hidden>
+              {workflowSteps.map((step, index) => (
                 <span
-                  aria-hidden
-                  className="absolute -left-[4.5px] top-1.5 h-2 w-2 rounded-full border border-brand-600 bg-white md:hidden"
+                  key={step.title}
+                  className={cn(
+                    'h-1 flex-1 rounded-full transition-colors duration-300 ease-smooth',
+                    index <= activeStep ? 'bg-brand-600' : 'bg-line',
+                  )}
                 />
-              )}
-              {index < 3 && (
-                <span
-                  aria-hidden
-                  className="absolute left-full top-5 hidden w-6 items-center text-navy-400 md:flex"
-                >
-                  <span className="h-px flex-1 bg-navy-300/80" />
-                  <ArrowRight className="ml-px h-3 w-3 shrink-0 text-brand-600" />
-                </span>
-              )}
-              <Reveal delay={index * 90}>
-                <div className="flex items-center gap-3">
-                  <span
-                    className={
-                      index === 3
-                        ? 'inline-flex h-10 w-10 items-center justify-center rounded-lg bg-azure-50 text-azure-700 ring-1 ring-inset ring-azure-300/50'
-                        : 'inline-flex h-10 w-10 items-center justify-center rounded-lg bg-sage text-brand-700'
-                    }
-                  >
-                    <Icon className="m-1 h-4 w-4" aria-hidden />
-                  </span>
-                  <span className="font-display text-[13px] font-medium tracking-[.04em] text-brand-700">
-                    0{index + 1}
-                  </span>
-                </div>
-                <h3 className="mt-4 font-display text-[21px] font-semibold tracking-[-0.02em] text-charcoal">{title}</h3>
-                <p className="mt-2.5 text-sm leading-7 text-muted">{text}</p>
-              </Reveal>
-            </li>
-          ))}
-        </ol>
+              ))}
+            </div>
+          </div>
+
+          <ol className="grid gap-4 md:grid-cols-4 md:gap-6">
+            {workflowSteps.map(({ icon: Icon, title, text, detail }, index) => {
+              const active = index === activeStep;
+              return (
+                <li key={title} className="relative h-full">
+                  <Reveal delay={index * 70} className="h-full">
+                    <button
+                      type="button"
+                      onClick={() => setActiveStep(index)}
+                      onMouseEnter={() => setActiveStep(index)}
+                      onFocus={() => setActiveStep(index)}
+                      aria-pressed={active}
+                      className={cn(
+                        'group flex h-full w-full flex-col rounded-xl border p-5 text-left transition-all duration-300 ease-smooth',
+                        active
+                          ? 'border-brand-300 bg-white shadow-soft md:-translate-y-1'
+                          : 'border-line bg-white/50 hover:border-brand-200 hover:bg-white',
+                      )}
+                    >
+                      <span className="flex items-center justify-between gap-3">
+                        <span
+                          className={cn(
+                            'inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-300',
+                            active ? 'bg-forest text-white' : 'bg-sage text-brand-700',
+                          )}
+                        >
+                          <Icon className="h-4 w-4" aria-hidden />
+                        </span>
+                        <span className="font-display text-[12px] font-medium tracking-[.12em] text-brand-700">
+                          0{index + 1}
+                        </span>
+                      </span>
+                      <span className="mt-4 font-display text-[21px] font-semibold tracking-[-0.02em] text-charcoal">
+                        {title}
+                      </span>
+                      <span className="mt-2.5 block text-sm leading-7 text-muted">{text}</span>
+                      <span
+                        className={cn(
+                          'block overflow-hidden text-[12px] leading-6 text-brand-800 transition-all duration-300 ease-smooth',
+                          active ? 'mt-3 max-h-24 opacity-100' : 'mt-0 max-h-0 opacity-0',
+                        )}
+                      >
+                        {detail}
+                      </span>
+                      <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-[11px] font-medium uppercase tracking-[.12em] text-brand-700">
+                        {active ? 'In view' : 'Inspect step'}
+                        <ArrowRight
+                          className={cn(
+                            'h-3 w-3 transition-transform duration-200 ease-smooth group-hover:translate-x-0.5',
+                            active && 'translate-x-0.5',
+                          )}
+                          aria-hidden
+                        />
+                      </span>
+                    </button>
+                  </Reveal>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       </PageSection>
 
       <PageSection tone="white">
@@ -433,30 +514,35 @@ export default function HomePage() {
           </h2>
         </div>
 
-        <div className="mt-12 grid gap-10 lg:grid-cols-3 lg:gap-0">
-          {roles.map((role, index) => (
-            <div
-              key={role.label}
-              className={
-                index > 0
-                  ? 'border-t border-line pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0'
-                  : 'lg:pr-10'
-              }
-            >
-              <p className="text-[11px] font-medium uppercase tracking-[.14em] text-brand-700">{role.label}</p>
-              <h3 className="mt-3 font-display text-[22px] font-semibold leading-[1.25] tracking-[-0.02em] text-charcoal">
-                {role.title}
-              </h3>
-              <p className="mt-3 text-sm leading-7 text-muted">{role.text}</p>
-              <ul className="mt-5 space-y-2">
-                {role.points.map((point) => (
-                  <li key={point} className="flex gap-2.5 text-[13px] leading-6 text-navy-700">
-                    <span aria-hidden className="mt-2.5 h-px w-3 shrink-0 bg-brand-500" />
-                    {point}
-                  </li>
-                ))}
-              </ul>
-            </div>
+        <div className="mt-12 grid gap-4 lg:grid-cols-3 lg:gap-6">
+          {roles.map(({ icon: Icon, label, title, text, points }, index) => (
+            <Reveal key={label} delay={index * 80} className="h-full">
+              <article className="group flex h-full flex-col rounded-xl border border-line bg-white/60 p-6 transition-all duration-300 ease-smooth hover:-translate-y-1 hover:border-brand-200 hover:bg-white hover:shadow-panel">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-sage text-brand-700 transition-colors duration-300 group-hover:bg-forest group-hover:text-white">
+                  <Icon className="h-5 w-5" aria-hidden />
+                </span>
+                <p className="mt-5 text-[11px] font-medium uppercase tracking-[.14em] text-brand-700">{label}</p>
+                <h3 className="mt-3 font-display text-[22px] font-semibold leading-[1.25] tracking-[-0.02em] text-charcoal">
+                  {title}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-muted">{text}</p>
+                <ul className="mt-5 space-y-2">
+                  {points.map((point) => (
+                    <li key={point} className="flex gap-2.5 text-[13px] leading-6 text-navy-700">
+                      <span aria-hidden className="mt-2.5 h-px w-3 shrink-0 bg-brand-500" />
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  to="/login"
+                  className="mt-auto inline-flex items-center gap-1.5 pt-6 text-[13px] font-medium text-brand-700 transition-colors hover:text-brand-800"
+                >
+                  Open this workspace
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 ease-smooth group-hover:translate-x-0.5" aria-hidden />
+                </Link>
+              </article>
+            </Reveal>
           ))}
         </div>
       </PageSection>

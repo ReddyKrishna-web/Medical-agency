@@ -124,6 +124,16 @@
   .shine {
     position: relative;
   }
+
+  /* Pointer tilt target: the wrapper owns the transform so children stay layout-stable. */
+  .tilt {
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .tilt > * {
+    transform: translateZ(0);
+  }
 }
 
 @media print {
@@ -168,5 +178,9 @@
   .reveal {
     opacity: 1;
     transform: none;
+  }
+  .tilt {
+    transform: none !important;
+    transition: none !important;
   }
 }

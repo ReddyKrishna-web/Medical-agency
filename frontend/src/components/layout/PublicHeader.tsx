@@ -70,7 +70,7 @@ export function PublicHeader() {
       </div>
 
       {open && (
-        <div className="border-t border-line bg-ivory lg:hidden">
+        <div className="animate-slide-down border-t border-line bg-ivory lg:hidden">
           <nav className="mx-auto flex max-w-[1240px] flex-col gap-0.5 px-4 py-4 sm:px-6">
             {links.map((link) => (
               <NavLink

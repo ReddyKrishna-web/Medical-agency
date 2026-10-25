@@ -6,6 +6,7 @@ import { CommandMenu } from './CommandMenu';
 import { NotificationPanel } from './NotificationPanel';
 import { mobileNavigation } from './navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { PageTransition } from '@/components/motion/Motion';
 import { cn } from '@/lib/utils';
 
 export default function DashboardLayout() {
@@ -43,11 +44,11 @@ export default function DashboardLayout() {
       {drawer && (
         <>
           <button
-            className="fixed inset-0 z-40 bg-charcoal/35 lg:hidden"
+            className="fixed inset-0 z-40 animate-fade-in bg-charcoal/35 lg:hidden"
             onClick={() => setDrawer(false)}
             aria-label="Close navigation"
           />
-          <div className="fixed inset-y-0 left-0 z-50 lg:hidden">
+          <div className="fixed inset-y-0 left-0 z-50 animate-slide-in-left lg:hidden">
             <Sidebar mobile onClose={() => setDrawer(false)} />
           </div>
         </>
@@ -64,7 +65,9 @@ export default function DashboardLayout() {
           className="min-h-[calc(100vh-4rem)] px-4 pb-24 pt-6 sm:px-6 lg:px-8 lg:pb-10"
         >
           <div className="mx-auto max-w-[1440px]">
-            <Outlet />
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
           </div>
         </main>
       </div>

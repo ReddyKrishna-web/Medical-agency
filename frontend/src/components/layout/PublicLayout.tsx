@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom';
+import { PageTransition } from '@/components/motion/Motion';
 import { PublicHeader } from './PublicHeader';
 import { PublicFooter } from './PublicFooter';
 
@@ -7,7 +8,9 @@ export default function PublicLayout() {
     <div className="flex min-h-screen flex-col bg-ivory text-charcoal">
       <PublicHeader />
       <main id="main-content" className="flex-1">
-        <Outlet />
+        <PageTransition>
+          <Outlet />
+        </PageTransition>
       </main>
       <PublicFooter />
     </div>
