@@ -66,7 +66,7 @@ export default function FollowUpsPage() {
 
   const customers = useQuery({
     queryKey: ['customers', { followups: true }],
-    queryFn: async () => mapCustomers((await apiMeta<unknown>('/customers', { params: { page: 1, limit: 200 } })).data),
+    queryFn: async () => mapCustomers((await apiMeta<unknown>('/customers', { params: { page: 1, limit: 100 } })).data),
     enabled: role !== 'customer',
     staleTime: 60_000,
   });

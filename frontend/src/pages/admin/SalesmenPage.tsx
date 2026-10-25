@@ -74,7 +74,7 @@ export default function SalesmenPage() {
 
   const assignableCustomers = useQuery({
     queryKey: ['customers', { assign: true }],
-    queryFn: async () => mapCustomers((await apiMeta<unknown>('/customers', { params: { page: 1, limit: 200 } })).data),
+    queryFn: async () => mapCustomers((await apiMeta<unknown>('/customers', { params: { page: 1, limit: 100 } })).data),
     enabled: Boolean(assigning),
   });
 

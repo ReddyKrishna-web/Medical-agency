@@ -55,7 +55,7 @@ export default function PaymentsPage() {
   const invoices = useQuery({
     queryKey: ['invoices', { payment: true }],
     queryFn: async () => {
-      const { data } = await apiMeta<unknown>('/invoices', { params: { page: 1, limit: 200 } });
+      const { data } = await apiMeta<unknown>('/invoices', { params: { page: 1, limit: 100 } });
       return mapInvoices(data);
     },
     enabled: open,
@@ -64,7 +64,7 @@ export default function PaymentsPage() {
   const customers = useQuery({
     queryKey: ['customers', { payment: true }],
     queryFn: async () => {
-      const { data } = await apiMeta<unknown>('/customers', { params: { page: 1, limit: 200 } });
+      const { data } = await apiMeta<unknown>('/customers', { params: { page: 1, limit: 100 } });
       return mapCustomers(data);
     },
     enabled: open,

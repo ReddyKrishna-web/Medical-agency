@@ -59,7 +59,7 @@ export default function InventoryPage() {
 
   const products = useQuery({
     queryKey: ['products', { inventory: true }],
-    queryFn: async () => mapProducts((await apiMeta<unknown>('/products', { params: { page: 1, limit: 300 } })).data),
+    queryFn: async () => mapProducts((await apiMeta<unknown>('/products', { params: { page: 1, limit: 100 } })).data),
     staleTime: 60_000,
   });
 

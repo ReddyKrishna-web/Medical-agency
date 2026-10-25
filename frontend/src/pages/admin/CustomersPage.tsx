@@ -92,8 +92,8 @@ export default function CustomersPage() {
   });
 
   const salesmen = useQuery({
-    queryKey: ['salesmen', { limit: 200 }],
-    queryFn: async () => mapSalesmen((await apiMeta<unknown>('/salesmen', { params: { limit: 200 } })).data),
+    queryKey: ['salesmen', { limit: 100 }],
+    queryFn: async () => mapSalesmen((await apiMeta<unknown>('/salesmen', { params: { limit: 100 } })).data),
     staleTime: 60_000,
   });
 

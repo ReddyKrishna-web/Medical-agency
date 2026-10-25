@@ -90,8 +90,8 @@ export default function OrderBuilderPage() {
   });
 
   const customers = useQuery({
-    queryKey: ['customers', { order: true, limit: 200 }],
-    queryFn: async () => mapCustomers((await apiMeta<unknown>('/customers', { params: { page: 1, limit: 200, status: 'ACTIVE' } })).data),
+    queryKey: ['customers', { order: true, limit: 100 }],
+    queryFn: async () => mapCustomers((await apiMeta<unknown>('/customers', { params: { page: 1, limit: 100, status: 'ACTIVE' } })).data),
     enabled: role !== 'customer',
   });
 
