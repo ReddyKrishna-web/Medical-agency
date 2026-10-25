@@ -7,6 +7,8 @@ import { NotificationPanel } from './NotificationPanel';
 import { mobileNavigation } from './navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { PageTransition } from '@/components/motion/Motion';
+import { SEO } from '@/components/ui/SEO';
+import { dashboardTitle } from '@/routes/titles';
 import { cn } from '@/lib/utils';
 
 export default function DashboardLayout() {
@@ -34,9 +36,11 @@ export default function DashboardLayout() {
   if (!user) return null;
 
   const mobile = mobileNavigation[user.role];
+  const pageTitle = dashboardTitle(location.pathname) ?? 'Workspace';
 
   return (
     <div className="min-h-screen bg-ivory">
+      <SEO title={pageTitle} description="Authenticated Supply Medicals workspace." noIndex />
       <div className="fixed inset-y-0 left-0 z-40 hidden lg:block">
         <Sidebar />
       </div>
