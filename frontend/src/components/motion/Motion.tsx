@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -248,9 +249,18 @@ export function AnimatedNumber({
   return <span className={className}>{format(display)}</span>;
 }
 
-/** Fades/slides each route in without remounting the shell. */
+/**
+ * Fades/slides each route in without remounting the shell. A new path starts
+ * at the top of the document so a scrolled page never leaves the next route
+ * mid-way down its content.
+ */
 export function PageTransition({ children }: { children: ReactNode }) {
   const location = useLocation();
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
     <div key={location.pathname} className="page-enter">
       {children}
