@@ -417,6 +417,25 @@ export default function HomePage() {
               const active = index === activeStep;
               return (
                 <li key={title} className="relative h-full">
+                  {index < workflowSteps.length - 1 && (
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute -right-6 top-1/2 z-10 hidden w-6 -translate-y-1/2 items-center justify-center md:flex"
+                    >
+                      <span
+                        className={cn(
+                          'h-px w-2 transition-colors duration-300',
+                          index < activeStep ? 'bg-brand-500' : 'bg-line',
+                        )}
+                      />
+                      <ArrowRight
+                        className={cn(
+                          'h-3 w-3 shrink-0 transition-colors duration-300',
+                          index < activeStep ? 'text-brand-600' : 'text-navy-300',
+                        )}
+                      />
+                    </span>
+                  )}
                   <Reveal delay={index * 70} className="h-full">
                     <button
                       type="button"
